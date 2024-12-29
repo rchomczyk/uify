@@ -2,9 +2,7 @@ package pl.auroramc.ui.scene;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 import net.kyori.adventure.text.Component;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
 import pl.auroramc.ui.canvas.Canvas;
