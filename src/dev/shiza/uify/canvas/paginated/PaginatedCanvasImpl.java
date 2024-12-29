@@ -1,9 +1,8 @@
 package dev.shiza.uify.canvas.paginated;
 
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.function.UnaryOperator;
 import dev.shiza.uify.canvas.CanvasWithPosition;
 import dev.shiza.uify.canvas.element.CanvasElement;
@@ -11,13 +10,13 @@ import dev.shiza.uify.position.Position;
 
 final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedCanvas {
 
-    private final Set<CanvasPosition> innerPositions;
+    private final List<CanvasPosition> innerPositions;
     private List<List<CanvasElement>> partitionedElements;
     private PrecalculatedSlotIndex[] precalculatedSlotIndexes;
     private int currentPage;
 
     PaginatedCanvasImpl(
-        final Set<CanvasPosition> innerPositions,
+        final List<CanvasPosition> innerPositions,
         final List<List<CanvasElement>> partitionedElements,
         final PrecalculatedSlotIndex[] precalculatedSlotIndexes,
         final int currentPage) {
@@ -28,7 +27,7 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
     }
 
     PaginatedCanvasImpl() {
-        this(new HashSet<>(), List.of(), new PrecalculatedSlotIndex[0], 0);
+        this(new ArrayList<>(), List.of(), new PrecalculatedSlotIndex[0], 0);
     }
 
     @Override
@@ -115,8 +114,8 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
         return slotIndexes;
     }
 
-    private Set<CanvasPosition> positionsToProcess() {
-        return innerPositions.isEmpty() ? Set.of(position()) : innerPositions;
+    private List<CanvasPosition> positionsToProcess() {
+        return innerPositions.isEmpty() ? List.of(position()) : innerPositions;
     }
 
     private int fillIndexesForPosition(
