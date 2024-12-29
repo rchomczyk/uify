@@ -1,2 +1,2 @@
-rootProject.name = "auroramc-ui"
+rootProject.name = "uify"
 
