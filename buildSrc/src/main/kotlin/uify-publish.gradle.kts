@@ -4,44 +4,16 @@ plugins {
 }
 
 group = "dev.shiza"
-version = "1.0-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-    maven("https://repo.papermc.io/repository/maven-public/")
-}
-
-dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.21.4-R0.1-SNAPSHOT")
-}
+version = "1.0.0-SNAPSHOT"
 
 java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
     withSourcesJar()
     withJavadocJar()
-}
-
-sourceSets {
-    main {
-        java.setSrcDirs(listOf("src"))
-        resources.setSrcDirs(emptyList<String>())
-    }
-    test {
-        java.setSrcDirs(emptyList<String>())
-        resources.setSrcDirs(emptyList<String>())
-    }
 }
 
 publishing {
     repositories {
         mavenLocal()
-    }
-
-    publications {
-        create<MavenPublication>("maven") {
-            artifactId = "uify"
-            from(project.components["java"])
-        }
     }
 }
 
@@ -65,6 +37,23 @@ fun RepositoryHandler.maven(
         this.credentials {
             this.username = System.getenv(username)
             this.password = System.getenv(password)
+        }
+    }
+}
+
+interface UifyPublishExtension {
+    var artifactId: String
+}
+
+val extension = extensions.create<UifyPublishExtension>("uifyPublish")
+
+afterEvaluate {
+    publishing {
+        publications {
+            create<MavenPublication>("maven") {
+                artifactId = extension.artifactId
+                from(project.components["java"])
+            }
         }
     }
 }
