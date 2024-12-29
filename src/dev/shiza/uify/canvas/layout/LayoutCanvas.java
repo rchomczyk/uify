@@ -1,9 +1,9 @@
 package dev.shiza.uify.canvas.layout;
 
+import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.Collections;
 import java.util.function.UnaryOperator;
 import dev.shiza.uify.canvas.Canvas;
-import dev.shiza.uify.canvas.CanvasWithPosition.CanvasPosition;
 import dev.shiza.uify.canvas.element.CanvasElement;
 
 public interface LayoutCanvas extends Canvas {

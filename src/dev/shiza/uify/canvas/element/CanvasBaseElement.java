@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.element;
 
+import dev.shiza.uify.canvas.element.behaviour.CanvasElementBehaviour;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -11,15 +12,14 @@ import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import dev.shiza.uify.scene.renderer.SceneRenderer;
-import dev.shiza.uify.sdk.TriConsumer;
 
 public class CanvasBaseElement implements CanvasElement {
 
     private Supplier<ItemStack> itemStack;
-    private TriConsumer<SceneInventoryHolder, CanvasBaseElement, InventoryDragEvent> elementDragConsumer =
-        (holder, element, event) -> {};
-    private TriConsumer<SceneInventoryHolder, CanvasBaseElement, InventoryClickEvent> elementClickConsumer =
-        (holder, element, event) -> {};
+    private CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragConsumer =
+        (state, event) -> {};
+    private CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickConsumer =
+        (state, event) -> {};
     private Set<SceneInventoryHolder> owners = Collections.emptySet();
 
     public CanvasBaseElement(final Supplier<ItemStack> itemStack) {
@@ -28,8 +28,8 @@ public class CanvasBaseElement implements CanvasElement {
 
     public CanvasBaseElement(
         final Supplier<ItemStack> itemStack,
-        final TriConsumer<SceneInventoryHolder, CanvasBaseElement, InventoryDragEvent> elementDragConsumer,
-        final TriConsumer<SceneInventoryHolder, CanvasBaseElement, InventoryClickEvent> elementClickConsumer) {
+        final CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragConsumer,
+        final CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickConsumer) {
         this.itemStack = itemStack;
         this.elementDragConsumer = elementDragConsumer;
         this.elementClickConsumer = elementClickConsumer;
@@ -41,13 +41,13 @@ public class CanvasBaseElement implements CanvasElement {
     }
 
     @Override
-    public CanvasElement onElementDrag(final TriConsumer<SceneInventoryHolder, CanvasBaseElement, InventoryDragEvent> elementDragConsumer) {
+    public CanvasElement onElementDrag(final CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragConsumer) {
         this.elementDragConsumer = this.elementDragConsumer.andThen(elementDragConsumer);
         return this;
     }
 
     @Override
-    public CanvasElement onElementClick(final TriConsumer<SceneInventoryHolder, CanvasBaseElement, InventoryClickEvent> elementClickConsumer) {
+    public CanvasElement onElementClick(final CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickConsumer) {
         this.elementClickConsumer = this.elementClickConsumer.andThen(elementClickConsumer);
         return this;
     }
@@ -68,11 +68,11 @@ public class CanvasBaseElement implements CanvasElement {
         this.itemStack = itemStack;
     }
 
-    public TriConsumer<SceneInventoryHolder, CanvasBaseElement, InventoryDragEvent> elementDragConsumer() {
+    public CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragConsumer() {
         return elementDragConsumer;
     }
 
-    public TriConsumer<SceneInventoryHolder, CanvasBaseElement, InventoryClickEvent> elementClickConsumer() {
+    public CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickConsumer() {
         return elementClickConsumer;
     }
 }

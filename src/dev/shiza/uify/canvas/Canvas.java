@@ -1,7 +1,7 @@
 package dev.shiza.uify.canvas;
 
+import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.function.UnaryOperator;
-import dev.shiza.uify.canvas.CanvasWithPosition.CanvasPosition;
 
 public interface Canvas {
 

@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.layout;
 
+import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.inventory.Inventory;
@@ -17,7 +18,7 @@ public final class LayoutCanvasRenderer implements CanvasRenderer<LayoutCanvas> 
     private static final char COLUMN_UNDEFINED = ' ';
 
     @Override
-    public Map<Integer, CanvasElement> renderCanvas(
+    public Map<Integer, IdentifiedCanvasElement> renderCanvas(
         final Inventory inventory,
         final SceneInventoryHolder sceneInventoryHolder,
         final Scene parentScene,
@@ -25,7 +26,7 @@ public final class LayoutCanvasRenderer implements CanvasRenderer<LayoutCanvas> 
         return renderCanvas(inventory, parentScene, sceneInventoryHolder, (LayoutCanvasImpl) parentCanvas);
     }
 
-    private Map<Integer, CanvasElement> renderCanvas(
+    private Map<Integer, IdentifiedCanvasElement> renderCanvas(
         final Inventory inventory,
         final Scene parentScene,
         final SceneInventoryHolder sceneInventoryHolder,

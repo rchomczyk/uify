@@ -1,6 +1,6 @@
 package dev.shiza.uify.position;
 
-import dev.shiza.uify.canvas.CanvasWithPosition.CanvasPosition;
+import dev.shiza.uify.canvas.position.CanvasPosition;
 
 public final class PositionUtils {
 

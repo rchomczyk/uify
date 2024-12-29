@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.layout;
 
+import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;

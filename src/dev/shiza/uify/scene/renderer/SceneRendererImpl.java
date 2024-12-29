@@ -1,5 +1,6 @@
 package dev.shiza.uify.scene.renderer;
 
+import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.inventory.Inventory;
@@ -8,7 +9,6 @@ import dev.shiza.uify.canvas.paginated.PaginatedCanvasRenderer;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
 import dev.shiza.uify.canvas.Canvas;
-import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.layout.LayoutCanvas;
 import dev.shiza.uify.canvas.layout.LayoutCanvasRenderer;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
@@ -40,7 +40,7 @@ final class SceneRendererImpl implements SceneRenderer {
         final Inventory sceneInventory = sceneInventoryHolder.getInventory();
         sceneInventory.clear();
 
-        final Map<Integer, CanvasElement> renderedElements = new HashMap<>();
+        final Map<Integer, IdentifiedCanvasElement> renderedElements = new HashMap<>();
         for (final Canvas canvas : scene.canvases()) {
             final CanvasMapperRenderer canvasMapperRenderer = renderer(canvas.getClass());
             renderedElements.putAll(canvasMapperRenderer.renderCanvas(sceneInventoryHolder, scene, canvas));
@@ -68,9 +68,7 @@ final class SceneRendererImpl implements SceneRenderer {
     @FunctionalInterface
     private interface CanvasMapperRenderer {
 
-        Map<Integer, CanvasElement> renderCanvas(
-            final SceneInventoryHolder sceneInventoryHolder,
-            final Scene parentScene,
-            final Canvas parentCanvas);
+        Map<Integer, IdentifiedCanvasElement> renderCanvas(
+            final SceneInventoryHolder sceneInventoryHolder, final Scene parentScene, final Canvas parentCanvas);
     }
 }

@@ -1,5 +1,6 @@
 package dev.shiza.uify.scene.inventory;
 
+import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
@@ -7,13 +8,12 @@ import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
-import dev.shiza.uify.canvas.element.CanvasElement;
 
 public final class SceneInventoryHolder implements InventoryHolder {
 
     private final Scene sceneMorph;
     private final Inventory inventory;
-    private Map<Integer, CanvasElement> renderedElements;
+    private Map<Integer, IdentifiedCanvasElement> renderedElements;
 
     public SceneInventoryHolder(final Scene sceneMorph) {
         this.sceneMorph = sceneMorph;
@@ -29,11 +29,11 @@ public final class SceneInventoryHolder implements InventoryHolder {
         return sceneMorph;
     }
 
-    public Map<Integer, CanvasElement> renderedElements() {
+    public Map<Integer, IdentifiedCanvasElement> renderedElements() {
         return renderedElements;
     }
 
-    public void renderedElements(final Map<Integer, CanvasElement> renderedElements) {
+    public void renderedElements(final Map<Integer, IdentifiedCanvasElement> renderedElements) {
         this.renderedElements = renderedElements;
     }
 

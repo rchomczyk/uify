@@ -1,9 +1,9 @@
 package dev.shiza.uify.canvas.paginated;
 
+import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
 import dev.shiza.uify.canvas.Canvas;
-import dev.shiza.uify.canvas.CanvasWithPosition.CanvasPosition;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.position.Position;
 

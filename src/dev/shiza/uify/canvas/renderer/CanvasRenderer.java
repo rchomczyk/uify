@@ -1,10 +1,11 @@
 package dev.shiza.uify.canvas.renderer;
 
+import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
+import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import dev.shiza.uify.canvas.CanvasWithPosition.CanvasPosition;
 import dev.shiza.uify.position.PositionUtils;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
@@ -15,26 +16,26 @@ import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 
 public interface CanvasRenderer<T> {
 
-    Map<Integer, CanvasElement> renderCanvas(
+    Map<Integer, IdentifiedCanvasElement> renderCanvas(
         final Inventory inventory,
         final SceneInventoryHolder sceneInventoryHolder,
         final Scene parentScene,
         final T parentCanvas);
 
-    default Map<Integer, CanvasElement> renderCanvasElements(
+    default Map<Integer, IdentifiedCanvasElement> renderCanvasElements(
         final Inventory inventory,
         final SceneInventoryHolder sceneInventoryHolder,
         final Scene parentScene,
         final CanvasWithPosition parentCanvas,
         final Map<Position, CanvasElement> bindingsByPosition) {
-        final Map<Integer, CanvasElement> renderedElements = new HashMap<>();
+        final Map<Integer, IdentifiedCanvasElement> renderedElements = new HashMap<>();
 
         final int columnsPerRow = ((SceneImpl) parentScene).view().columnsPerRow();
         bindingsByPosition.forEach((localPosition, element) -> {
             final CanvasPosition canvasPosition = parentCanvas.position();
 
             final int slotIndex = getSlotIndex(canvasPosition, localPosition, columnsPerRow);
-            renderedElements.put(slotIndex, element);
+            renderedElements.put(slotIndex, new IdentifiedCanvasElement(parentCanvas, element));
 
             final ItemStack renderedItemStack = element.renderElement(parentScene, parentCanvas);
             inventory.setItem(slotIndex, renderedItemStack);

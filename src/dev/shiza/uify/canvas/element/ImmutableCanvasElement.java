@@ -9,8 +9,8 @@ public class ImmutableCanvasElement extends CanvasBaseElement {
     public ImmutableCanvasElement(final Supplier<ItemStack> itemStack) {
         super(
             itemStack,
-            (holder, element, event) -> event.setCancelled(true),
-            (holder, element, event) -> event.setCancelled(true));
+            (state, event) -> event.setCancelled(true),
+            (state, event) -> event.setCancelled(true));
     }
 
     public ImmutableCanvasElement(final Material material) {

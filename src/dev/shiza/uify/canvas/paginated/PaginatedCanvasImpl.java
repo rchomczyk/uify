@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.paginated;
 
+import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -34,10 +35,7 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
     public PaginatedCanvas populate(final Collection<CanvasElement> elements) {
         final int elementsPerPartition = innerPositions.isEmpty()
             ? calculateSlotsForPosition(position())
-            : innerPositions.stream()
-            .mapToInt(this::calculateSlotsForPosition)
-            .sum();
-
+            : innerPositions.stream().mapToInt(this::calculateSlotsForPosition).sum();
         this.partitionedElements = PaginatedCanvasUtils.partition(elements, elementsPerPartition);
         this.precalculatedSlotIndexes = calculatePrecalculatedIndexes(elementsPerPartition);
         return this;
