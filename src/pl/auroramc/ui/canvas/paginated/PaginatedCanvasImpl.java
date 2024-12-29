@@ -1,7 +1,9 @@
 package pl.auroramc.ui.canvas.paginated;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.function.UnaryOperator;
 import pl.auroramc.ui.canvas.CanvasWithPosition;
 import pl.auroramc.ui.canvas.element.CanvasElement;
@@ -9,37 +11,53 @@ import pl.auroramc.ui.position.Position;
 
 final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedCanvas {
 
+    private final Set<CanvasPosition> innerPositions;
     private List<List<CanvasElement>> partitionedElements;
     private PrecalculatedSlotIndex[] precalculatedSlotIndexes;
-    private int currentPage = 0;
+    private int currentPage;
+
+    PaginatedCanvasImpl(
+        final Set<CanvasPosition> innerPositions,
+        final List<List<CanvasElement>> partitionedElements,
+        final PrecalculatedSlotIndex[] precalculatedSlotIndexes,
+        final int currentPage) {
+        this.innerPositions = innerPositions;
+        this.partitionedElements = partitionedElements;
+        this.precalculatedSlotIndexes = precalculatedSlotIndexes;
+        this.currentPage = currentPage;
+    }
 
     PaginatedCanvasImpl() {
+        this(new HashSet<>(), List.of(), new PrecalculatedSlotIndex[0], 0);
     }
 
     @Override
     public PaginatedCanvas populate(final Collection<CanvasElement> elements) {
-        final int elementsPerPartition = elementsPerPage();
+        final int elementsPerPartition = innerPositions.isEmpty()
+            ? calculateSlotsForPosition(position())
+            : innerPositions.stream()
+            .mapToInt(this::calculateSlotsForPosition)
+            .sum();
+
         this.partitionedElements = PaginatedCanvasUtils.partition(elements, elementsPerPartition);
-        this.precalculatedSlotIndexes = new PrecalculatedSlotIndex[elementsPerPartition];
-        this.precalculateSlotIndexes();
+        this.precalculatedSlotIndexes = calculatePrecalculatedIndexes(elementsPerPartition);
         return this;
     }
 
     @Override
     public PaginatedCanvas page(final int page) {
         if (page < 0 || page >= partitionedElements.size()) {
-            throw new PaginatedCanvasRenderingException(
-                "Could not render paginated canvas, because of invalid page number.");
+            throw new PaginatedCanvasRenderingException("Invalid page number: " + page);
         }
 
-        currentPage = page;
+        this.currentPage = page;
         return this;
     }
 
     @Override
     public PaginatedCanvas forward() {
-        if (currentPage < partitionedElements.size() - 1) {
-            currentPage++;
+        if (currentPage < pages() - 1) {
+            this.currentPage++;
         }
         return this;
     }
@@ -47,7 +65,7 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
     @Override
     public PaginatedCanvas backward() {
         if (currentPage > 0) {
-            currentPage--;
+            this.currentPage--;
         }
         return this;
     }
@@ -55,6 +73,12 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
     @Override
     public PaginatedCanvas position(final UnaryOperator<CanvasPosition> mutator) {
         super.position(mutator);
+        return this;
+    }
+
+    @Override
+    public PaginatedCanvas positionInner(final UnaryOperator<CanvasPosition> canvasPosition) {
+        innerPositions.add(canvasPosition.apply(new CanvasPosition()));
         return this;
     }
 
@@ -80,29 +104,48 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
         return currentPage;
     }
 
-    private void precalculateSlotIndexes() {
-        int currentRow = 0;
-        int currentColumn = 0;
+    private PrecalculatedSlotIndex[] calculatePrecalculatedIndexes(final int totalSlots) {
+        final PrecalculatedSlotIndex[] slotIndexes = new PrecalculatedSlotIndex[totalSlots];
 
-        final int totalColumns = position().maximum().column() + 1;
-        for (int index = 0; index < precalculatedSlotIndexes.length; index++) {
-            if (currentColumn == totalColumns) {
-                currentColumn = 0;
-                currentRow++;
-            }
-
-            final int slotIndex = currentRow * totalColumns + currentColumn;
-            precalculatedSlotIndexes[index] = new PrecalculatedSlotIndex(
-                currentRow,
-                currentColumn,
-                slotIndex);
-            currentColumn++;
+        int index = 0;
+        for (final CanvasPosition position : positionsToProcess()) {
+            index = fillIndexesForPosition(position, slotIndexes, index);
         }
+
+        return slotIndexes;
     }
 
-    private int elementsPerPage() {
-        final Position minimum = position().minimum();
-        final Position maximum = position().maximum();
+    private Set<CanvasPosition> positionsToProcess() {
+        return innerPositions.isEmpty() ? Set.of(position()) : innerPositions;
+    }
+
+    private int fillIndexesForPosition(
+        final CanvasPosition position,
+        final PrecalculatedSlotIndex[] slotIndexes,
+        final int startIndex) {
+        final int totalColumns = position.maximum().column() - position.minimum().column() + 1;
+        final Position minimum = position.minimum();
+        final Position maximum = position.maximum();
+
+        int index = startIndex;
+        int currentRow = minimum.row();
+        int currentColumn = minimum.column();
+        while (currentRow <= maximum.row()) {
+            while (currentColumn <= maximum.column()) {
+                final int slotIndex = (currentRow - minimum.row()) * totalColumns + (currentColumn - minimum.column());
+                slotIndexes[index++] = new PrecalculatedSlotIndex(currentRow, currentColumn, slotIndex);
+                currentColumn++;
+            }
+            currentColumn = minimum.column();
+            currentRow++;
+        }
+
+        return index;
+    }
+
+    private int calculateSlotsForPosition(final CanvasPosition position) {
+        final Position minimum = position.minimum();
+        final Position maximum = position.maximum();
         if (minimum == null || maximum == null) {
             throw new PaginatedCanvasPartitioningException(
                 "Could not partition elements for paginated canvas, because of missing minimum and maximum bounds. In" +

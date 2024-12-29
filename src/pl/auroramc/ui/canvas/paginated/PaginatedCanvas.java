@@ -32,6 +32,8 @@ public interface PaginatedCanvas extends Canvas {
     @Override
     PaginatedCanvas position(final UnaryOperator<CanvasPosition> mutator);
 
+    PaginatedCanvas positionInner(final UnaryOperator<CanvasPosition> canvasPosition);
+
     int pages();
 
     int pageCurrent();

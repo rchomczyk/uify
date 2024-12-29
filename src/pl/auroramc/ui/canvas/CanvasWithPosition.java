@@ -24,7 +24,7 @@ public abstract class CanvasWithPosition implements Canvas {
         private static final int MINIMUM_COLUMN = 0;
         private static final int MAXIMUM_COLUMN = 8;
 
-        private CanvasPosition() {
+        public CanvasPosition() {
             this(null, null);
         }
 
