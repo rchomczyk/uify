@@ -1,0 +1,47 @@
+package pl.auroramc.ui.canvas.paginated;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import org.bukkit.inventory.Inventory;
+import pl.auroramc.ui.canvas.element.CanvasElement;
+import pl.auroramc.ui.canvas.paginated.PaginatedCanvasImpl.PrecalculatedSlotIndex;
+import pl.auroramc.ui.canvas.renderer.CanvasRenderer;
+import pl.auroramc.ui.position.Position;
+import pl.auroramc.ui.scene.Scene;
+import pl.auroramc.ui.scene.inventory.SceneInventoryHolder;
+
+public class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
+
+    @Override
+    public Map<Integer, CanvasElement> renderCanvas(
+        final Inventory inventory,
+        final SceneInventoryHolder sceneInventoryHolder,
+        final Scene parentScene,
+        final PaginatedCanvas parentCanvas) {
+        return renderCanvas(inventory, sceneInventoryHolder, parentScene, (PaginatedCanvasImpl) parentCanvas);
+    }
+
+    private Map<Integer, CanvasElement> renderCanvas(
+        final Inventory inventory,
+        final SceneInventoryHolder sceneInventoryHolder,
+        final Scene parentScene,
+        final PaginatedCanvasImpl parentCanvas) {
+        final Map<Position, CanvasElement> mutableBindingsByPosition = new HashMap<>();
+
+        final List<List<CanvasElement>> partitionedElements = parentCanvas.partitionedElements();
+        final List<CanvasElement> currentPartition = partitionedElements.get(parentCanvas.currentPage());
+
+        final PrecalculatedSlotIndex[] precalculatedSlotIndexes = parentCanvas.precalculatedSlotIndexes();
+        final int elementsCount = currentPartition.size();
+        for (int index = 0; index < elementsCount; index++) {
+            final PrecalculatedSlotIndex precalculatedSlotIndex = precalculatedSlotIndexes[index];
+            mutableBindingsByPosition.put(
+                new Position(precalculatedSlotIndex.row(), precalculatedSlotIndex.column()),
+                currentPartition.get(index));
+        }
+
+        return renderCanvasElements(
+            inventory, sceneInventoryHolder, parentScene, parentCanvas, mutableBindingsByPosition);
+    }
+}
