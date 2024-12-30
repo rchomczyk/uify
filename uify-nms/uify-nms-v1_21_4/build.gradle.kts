@@ -1,6 +1,6 @@
 plugins {
     `uify-java`
-    `uify-publish-reobf`
+    `uify-publish`
     `uify-repositories`
     id("io.papermc.paperweight.userdev") version "2.0.0-beta.8"
 }
