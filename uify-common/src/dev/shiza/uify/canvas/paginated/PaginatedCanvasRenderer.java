@@ -12,7 +12,7 @@ import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 
-public class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
+public final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
 
     @Override
     public Map<Integer, IdentifiedCanvasElement> renderCanvas(

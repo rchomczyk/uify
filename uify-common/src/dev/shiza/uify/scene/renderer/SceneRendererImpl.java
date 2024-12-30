@@ -1,6 +1,8 @@
 package dev.shiza.uify.scene.renderer;
 
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
+import dev.shiza.uify.canvas.sequential.SequentialCanvas;
+import dev.shiza.uify.canvas.sequential.SequentialCanvasRenderer;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.inventory.Inventory;
@@ -20,11 +22,14 @@ final class SceneRendererImpl implements SceneRenderer {
     SceneRendererImpl() {
         final LayoutCanvasRenderer layoutCanvasRenderer = new LayoutCanvasRenderer();
         final PaginatedCanvasRenderer paginatedCanvasRenderer = new PaginatedCanvasRenderer();
+        final SequentialCanvasRenderer sequentialCanvasRenderer = new SequentialCanvasRenderer();
         this.renderers = Map.of(
             LayoutCanvas.class, (holder, scene, canvas) ->
                 layoutCanvasRenderer.renderCanvas(holder.getInventory(), holder, scene, (LayoutCanvas) canvas),
             PaginatedCanvas.class, (holder, scene, canvas) ->
-                paginatedCanvasRenderer.renderCanvas(holder.getInventory(), holder, scene, (PaginatedCanvas) canvas));
+                paginatedCanvasRenderer.renderCanvas(holder.getInventory(), holder, scene, (PaginatedCanvas) canvas),
+            SequentialCanvas.class, (holder, scene, canvas) ->
+                sequentialCanvasRenderer.renderCanvas(holder.getInventory(), holder, scene, (SequentialCanvas) canvas));
     }
 
     @Override
