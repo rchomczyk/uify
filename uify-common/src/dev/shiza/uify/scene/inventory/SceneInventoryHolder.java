@@ -1,7 +1,9 @@
 package dev.shiza.uify.scene.inventory;
 
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
+import dev.shiza.uify.inventory.InventoryAccessorProvider;
 import java.util.Map;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
@@ -23,6 +25,10 @@ public final class SceneInventoryHolder implements InventoryHolder {
     @Override
     public @NotNull Inventory getInventory() {
         return inventory;
+    }
+
+    public void title(final Component title) {
+        InventoryAccessorProvider.inventoryAccessor().title(this, title);
     }
 
     public Scene sceneMorph() {

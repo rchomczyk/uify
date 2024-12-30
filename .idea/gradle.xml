@@ -22,6 +22,11 @@
             <option value="$PROJECT_DIR$" />
             <option value="$PROJECT_DIR$/buildSrc" />
             <option value="$PROJECT_DIR$/uify-common" />
+            <option value="$PROJECT_DIR$/uify-nms" />
+            <option value="$PROJECT_DIR$/uify-nms/uify-nms-adapter" />
+            <option value="$PROJECT_DIR$/uify-nms/uify-nms-common" />
+            <option value="$PROJECT_DIR$/uify-nms/uify-nms-v1_20_4" />
+            <option value="$PROJECT_DIR$/uify-nms/uify-nms-v1_21_4" />
           </set>
         </option>
       </GradleProjectSettings>

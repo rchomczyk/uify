@@ -1,4 +1,4 @@
-package dev.shiza.uify.item;
+package dev.shiza.uify.inventory.item;
 
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.element.ImmutableCanvasElement;

@@ -23,7 +23,9 @@ afterEvaluate {
         publications {
             create<MavenPublication>("maven") {
                 artifactId = extension.artifactId
-                from(project.components["java"])
+                artifact(tasks.named("reobfJar")) {
+                    builtBy(tasks.named("reobfJar"))
+                }
             }
         }
     }
