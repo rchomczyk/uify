@@ -11,6 +11,7 @@ import dev.shiza.uify.position.Position;
 
 final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedCanvas {
 
+    private static final String ROW_DELIMITER = "\n";
     private final List<CanvasPosition> innerPositions;
     private List<List<CanvasElement>> partitionedElements;
     private PrecalculatedSlotIndex[] precalculatedSlotIndexes;
@@ -29,6 +30,45 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
 
     PaginatedCanvasImpl() {
         this(new ArrayList<>(), List.of(), new PrecalculatedSlotIndex[0], 0);
+    }
+
+    static PaginatedCanvas ofPattern(final char symbol, final String pattern) {
+        final String[] rows = pattern.split(ROW_DELIMITER);
+
+        final List<Position> activePositions = positionsFromPattern(symbol, rows);
+
+        final PaginatedCanvasImpl paginatedCanvas = new PaginatedCanvasImpl();
+        for (final Position position : activePositions) {
+            paginatedCanvas.positionInner(__ -> CanvasPosition.pos(position));
+        }
+
+        if (rows.length == 0) {
+            throw new PaginatedCanvasRenderingException("The pattern does not contain any rows.");
+        }
+
+        final int columnsPerRow = rows[0].length();
+        return paginatedCanvas
+            .position(position ->
+                position
+                    .minimum(0, 0)
+                    .maximum(rows.length - 1, columnsPerRow - 1));
+    }
+
+    private static List<Position> positionsFromPattern(final char symbol, final String[] rows) {
+        final List<Position> activePositions = new ArrayList<>();
+        for (int row = 0; row < rows.length; row++) {
+            for (int column = 0; column < rows[row].length(); column++) {
+                if (rows[row].charAt(column) == symbol) {
+                    activePositions.add(new Position(row, column));
+                }
+            }
+        }
+
+        if (activePositions.isEmpty()) {
+            throw new IllegalArgumentException("The pattern does not contain any active 'x' positions.");
+        }
+
+        return activePositions;
     }
 
     @Override
