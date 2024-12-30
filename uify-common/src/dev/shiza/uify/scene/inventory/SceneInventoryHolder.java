@@ -2,6 +2,8 @@ package dev.shiza.uify.scene.inventory;
 
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import dev.shiza.uify.inventory.InventoryAccessorProvider;
+import dev.shiza.uify.scene.view.ChestView;
+import dev.shiza.uify.scene.view.SceneView;
 import java.util.Map;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
@@ -45,6 +47,11 @@ public final class SceneInventoryHolder implements InventoryHolder {
 
     private Inventory createInventory() {
         final SceneImpl scene = (SceneImpl) sceneMorph;
-        return Bukkit.createInventory(this, scene.view().estimatedSize(), scene.title());
+        final SceneView sceneView = scene.view();
+        if (sceneView instanceof ChestView) {
+            return Bukkit.createInventory(this, sceneView.estimatedSize(), scene.title());
+        }
+
+        return Bukkit.createInventory(this, sceneView.inventoryType(), scene.title());
     }
 }
