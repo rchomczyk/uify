@@ -9,7 +9,9 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.Inventory;
 import dev.shiza.uify.scene.SceneImpl;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
+import org.jetbrains.annotations.ApiStatus;
 
+@ApiStatus.Internal
 public final class CanvasElementInteractionListener implements Listener {
 
     @EventHandler
