@@ -17,6 +17,10 @@ public record CanvasPosition(Position minimum, Position maximum) {
             new Position(row, MAXIMUM_COLUMN));
     }
 
+    public static CanvasPosition pos(final Position position) {
+        return new CanvasPosition(position, position);
+    }
+
     public CanvasPosition minimum(final int row, final int column) {
         return new CanvasPosition(new Position(row, column), maximum);
     }

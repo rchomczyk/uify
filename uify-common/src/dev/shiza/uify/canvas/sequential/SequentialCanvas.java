@@ -9,12 +9,9 @@ import java.util.function.UnaryOperator;
 
 public interface SequentialCanvas extends Canvas {
 
-    static SequentialCanvas ofElements(final List<CanvasElement> elements) {
-        return new SequentialCanvasImpl(elements);
-    }
-
-    static SequentialCanvas of() {
-        return ofElements(new ArrayList<>());
+    static SequentialCanvas ofRows(final int rows) {
+        return new SequentialCanvasImpl(new ArrayList<>())
+            .position(position -> position.minimum(0, 0).maximum(rows - 1, 8));
     }
 
     SequentialCanvas element(final CanvasElement element);

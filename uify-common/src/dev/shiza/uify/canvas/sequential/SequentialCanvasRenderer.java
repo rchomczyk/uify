@@ -2,9 +2,11 @@ package dev.shiza.uify.canvas.sequential;
 
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
+import dev.shiza.uify.canvas.position.CanvasPosition;
 import dev.shiza.uify.canvas.renderer.CanvasRenderer;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.Scene;
+import dev.shiza.uify.scene.SceneImpl;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +29,7 @@ public final class SequentialCanvasRenderer implements CanvasRenderer<Sequential
         final Scene parentScene,
         final SequentialCanvasImpl parentCanvas) {
         final int requiredSize = parentCanvas.elements().size();
-        final int estimatedSize = estimatedSize(parentCanvas);
+        final int estimatedSize = estimatedSize((SceneImpl) parentScene, parentCanvas);
         if (requiredSize > estimatedSize) {
             throw new SequentialCanvasRenderingException(
                 "Could not render sequential canvas because of insufficient size, required: %d, estimated size: %d".formatted(
@@ -51,9 +53,18 @@ public final class SequentialCanvasRenderer implements CanvasRenderer<Sequential
         return renderCanvasElements(inventory, sceneInventoryHolder, parentScene, parentCanvas, elementsByPosition);
     }
 
-    private int estimatedSize(final SequentialCanvasImpl parentCanvas) {
-        final Position minimum = parentCanvas.position().minimum();
-        final Position maximum = parentCanvas.position().maximum();
-        return (maximum.row() - minimum.row() + 1) * (maximum.column() - minimum.column() + 1);
+    private int estimatedSize(final SceneImpl scene, final SequentialCanvasImpl parentCanvas) {
+        final CanvasPosition position = parentCanvas.position();
+        if (hasPredefinedBounds(position)) {
+            final Position minimum = parentCanvas.position().minimum();
+            final Position maximum = parentCanvas.position().maximum();
+            return (maximum.row() - minimum.row() + 1) * (maximum.column() - minimum.column() + 1);
+        }
+
+        return scene.view().estimatedSize();
+    }
+
+    private boolean hasPredefinedBounds(final CanvasPosition canvasPosition) {
+        return canvasPosition.minimum() != null && canvasPosition.maximum() != null;
     }
 }
