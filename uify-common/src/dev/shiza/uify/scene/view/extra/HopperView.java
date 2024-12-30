@@ -5,6 +5,8 @@ import org.bukkit.event.inventory.InventoryType;
 
 public record HopperView() implements SceneView {
 
+    private static final int COLUMNS_PER_ROW = 5;
+
     public static HopperView of() {
         return new HopperView();
     }
@@ -16,7 +18,7 @@ public record HopperView() implements SceneView {
 
     @Override
     public int columnsPerRow() {
-        return 5;
+        return COLUMNS_PER_ROW;
     }
 
     @Override
