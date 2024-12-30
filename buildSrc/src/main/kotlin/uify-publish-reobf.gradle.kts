@@ -9,6 +9,7 @@ version = "1.0.0-SNAPSHOT"
 publishing {
     repositories {
         mavenLocal()
+        maven("aurora-repo", "https://repo.shiza.dev/aurora", "auroraUsername", "auroraPassword")
     }
 }
 
@@ -27,6 +28,28 @@ afterEvaluate {
                     builtBy(tasks.named("reobfJar"))
                 }
             }
+        }
+    }
+}
+
+fun RepositoryHandler.maven(
+    name: String,
+    url: String,
+    username: String,
+    password: String,
+    snapshots: Boolean = true
+) {
+    val isSnapshot = version.toString().endsWith("-SNAPSHOT")
+    if (isSnapshot && !snapshots) {
+        return
+    }
+
+    this.maven {
+        this.name = name
+        this.url = uri(url)
+        this.credentials {
+            this.username = findProperty(username) as String
+            this.password = findProperty(password) as String
         }
     }
 }
