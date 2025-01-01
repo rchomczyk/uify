@@ -1,5 +1,6 @@
 package dev.shiza.uify.scene;
 
+import dev.shiza.uify.scene.view.AnvilView;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -33,6 +34,10 @@ public record SceneImpl(SceneView view, Component title, List<Canvas> canvases, 
 
     @Override
     public Scene viewer(final Player viewer) {
+        if (view instanceof AnvilView) {
+            throw new SceneConfigurationException("You cannot add more than one viewer to anvil view.");
+        }
+
         final List<Player> mutableViewers = new ArrayList<>(viewers);
         mutableViewers.add(viewer);
         return new SceneImpl(view, title, canvases, mutableViewers);
@@ -41,6 +46,12 @@ public record SceneImpl(SceneView view, Component title, List<Canvas> canvases, 
     @Override
     public void dispatch() {
         final SceneInventoryHolder sceneInventoryHolder = SceneRenderer.sceneRenderer().renderScene(this);
+        final SceneImpl scene = (SceneImpl) sceneInventoryHolder.sceneMorph();
+        if (scene.view() instanceof AnvilView && sceneInventoryHolder.anvilInventory() != null) {
+            sceneInventoryHolder.anvilInventory().open();
+            return;
+        }
+
         viewers.forEach(viewer -> viewer.openInventory(sceneInventoryHolder.getInventory()));
     }
 }

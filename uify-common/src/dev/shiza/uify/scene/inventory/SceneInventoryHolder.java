@@ -2,31 +2,32 @@ package dev.shiza.uify.scene.inventory;
 
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import dev.shiza.uify.inventory.InventoryAccessorProvider;
+import dev.shiza.uify.inventory.anvil.AnvilInventory;
+import dev.shiza.uify.inventory.anvil.AnvilInventoryFactory;
+import dev.shiza.uify.scene.view.AnvilView;
 import dev.shiza.uify.scene.view.ChestView;
 import dev.shiza.uify.scene.view.SceneView;
 import java.util.Map;
 import net.kyori.adventure.text.Component;
 import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
+import org.jetbrains.annotations.Nullable;
 
 public final class SceneInventoryHolder implements InventoryHolder {
 
     private final Scene sceneMorph;
     private final Inventory inventory;
+    private AnvilInventory anvilInventory;
     private Map<Integer, IdentifiedCanvasElement> renderedElements;
 
     public SceneInventoryHolder(final Scene sceneMorph) {
         this.sceneMorph = sceneMorph;
         this.inventory = createInventory();
-    }
-
-    @Override
-    public @NotNull Inventory getInventory() {
-        return inventory;
     }
 
     public void title(final Component title) {
@@ -35,6 +36,15 @@ public final class SceneInventoryHolder implements InventoryHolder {
 
     public Scene sceneMorph() {
         return sceneMorph;
+    }
+
+    @Override
+    public @NotNull Inventory getInventory() {
+        return inventory;
+    }
+
+    public @Nullable AnvilInventory anvilInventory() {
+        return anvilInventory;
     }
 
     public Map<Integer, IdentifiedCanvasElement> renderedElements() {
@@ -50,8 +60,12 @@ public final class SceneInventoryHolder implements InventoryHolder {
         final SceneView sceneView = scene.view();
         if (sceneView instanceof ChestView) {
             return Bukkit.createInventory(this, sceneView.estimatedSize(), scene.title());
+        } else if (sceneView instanceof AnvilView(Player viewer)) {
+            anvilInventory = AnvilInventoryFactory.anvilInventory(viewer, scene.title());
+            anvilInventory.holder(this);
+            return anvilInventory.getBukkitInventory();
+        } else {
+            return Bukkit.createInventory(this, sceneView.inventoryType(), scene.title());
         }
-
-        return Bukkit.createInventory(this, sceneView.inventoryType(), scene.title());
     }
 }
