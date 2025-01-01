@@ -6,15 +6,13 @@ import org.jetbrains.annotations.NotNull;
 
 public interface AnvilInventory {
 
-    String renameText();
-
-    void renameText(final String renameText);
-
     void open();
 
-    void close();
-
     void holder(final InventoryHolder holder);
+    
+    void renameText(final String renameText);
+
+    String renameText();
 
     @NotNull
     Inventory getBukkitInventory();

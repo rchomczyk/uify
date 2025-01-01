@@ -6,7 +6,6 @@ import java.lang.invoke.VarHandle;
 import net.kyori.adventure.text.Component;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
-import net.minecraft.network.protocol.game.ClientboundContainerClosePacket;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -21,7 +20,6 @@ import org.bukkit.craftbukkit.v1_20_R3.event.CraftEventFactory;
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftInventoryAnvil;
 import org.bukkit.craftbukkit.v1_20_R3.inventory.CraftInventoryView;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
@@ -70,8 +68,26 @@ final class AnvilInventoryV1_20_4 extends AnvilMenu implements AnvilInventory {
     }
 
     @Override
-    public String renameText() {
-        return renameText;
+    public void open() {
+        visible = true;
+
+        CraftEventFactory.callInventoryOpenEvent(player, this);
+
+        final NonNullList<ItemStack> items = NonNullList.of(ItemStack.EMPTY, item(0), item(1), item(2));
+        player.containerMenu = this;
+        player.connection.send(new ClientboundOpenScreenPacket(containerId, MenuType.ANVIL, getTitle()));
+        player.connection.send(
+            new ClientboundContainerSetContentPacket(
+                player.containerMenu.containerId,
+                incrementStateId(),
+                items,
+                ItemStack.EMPTY));
+        player.initMenu(this);
+    }
+
+    @Override
+    public void holder(final InventoryHolder holder) {
+        BUKKIT_OWNER_HANDLE.set(inputSlots, holder);
     }
 
     @Override
@@ -96,35 +112,8 @@ final class AnvilInventoryV1_20_4 extends AnvilMenu implements AnvilInventory {
     }
 
     @Override
-    public void open() {
-        visible = true;
-
-        CraftEventFactory.callInventoryOpenEvent(player, this);
-
-        final NonNullList<ItemStack> items = NonNullList.of(ItemStack.EMPTY, item(0), item(1), item(2));
-        player.containerMenu = this;
-        player.connection.send(new ClientboundOpenScreenPacket(containerId, MenuType.ANVIL, getTitle()));
-        player.connection.send(
-            new ClientboundContainerSetContentPacket(
-                player.containerMenu.containerId,
-                incrementStateId(),
-                items,
-                ItemStack.EMPTY));
-        player.initMenu(this);
-    }
-
-    @Override
-    public void close() {
-        visible = false;
-
-        CraftEventFactory.handleInventoryCloseEvent(player, InventoryCloseEvent.Reason.PLUGIN);
-
-        player.connection.send(new ClientboundContainerClosePacket(containerId));
-    }
-
-    @Override
-    public void holder(final InventoryHolder holder) {
-        BUKKIT_OWNER_HANDLE.set(inputSlots, holder);
+    public String renameText() {
+        return renameText;
     }
 
     @Override

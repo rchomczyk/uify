@@ -3,6 +3,7 @@ package dev.shiza.uify.scene;
 import dev.shiza.uify.scene.view.AnvilView;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
@@ -12,24 +13,28 @@ import dev.shiza.uify.scene.renderer.SceneRenderer;
 import dev.shiza.uify.scene.view.SceneView;
 
 @ApiStatus.Internal
-public record SceneImpl(SceneView view, Component title, List<Canvas> canvases, List<Player> viewers)
+public record SceneImpl(SceneView view,
+                        Component title,
+                        List<Canvas> canvases,
+                        List<Player> viewers,
+                        Consumer<Player> sceneCloseBehaviour)
     implements Scene {
 
     @Override
     public Scene view(final SceneView view) {
-        return new SceneImpl(view, title, canvases, viewers);
+        return new SceneImpl(view, title, canvases, viewers, sceneCloseBehaviour);
     }
 
     @Override
     public Scene title(final Component title) {
-        return new SceneImpl(view, title, canvases, viewers);
+        return new SceneImpl(view, title, canvases, viewers, sceneCloseBehaviour);
     }
 
     @Override
     public Scene canvas(final Canvas canvas) {
         final List<Canvas> mutableCanvases = new ArrayList<>(canvases);
         mutableCanvases.add(canvas);
-        return new SceneImpl(view, title, mutableCanvases, viewers);
+        return new SceneImpl(view, title, mutableCanvases, viewers, sceneCloseBehaviour);
     }
 
     @Override
@@ -40,7 +45,12 @@ public record SceneImpl(SceneView view, Component title, List<Canvas> canvases, 
 
         final List<Player> mutableViewers = new ArrayList<>(viewers);
         mutableViewers.add(viewer);
-        return new SceneImpl(view, title, canvases, mutableViewers);
+        return new SceneImpl(view, title, canvases, mutableViewers, sceneCloseBehaviour);
+    }
+
+    @Override
+    public Scene onSceneClose(final Consumer<Player> sceneCloseBehaviour) {
+        return new SceneImpl(view, title, canvases, viewers, this.sceneCloseBehaviour.andThen(sceneCloseBehaviour));
     }
 
     @Override

@@ -14,10 +14,10 @@ public interface CanvasElement {
     ItemStack renderElement(final Scene parentScene, final Canvas parentCanvas);
 
     CanvasElement onElementDrag(
-        final CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragConsumer);
+        final CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragBehaviour);
 
     CanvasElement onElementClick(
-        final CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickConsumer);
+        final CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour);
 
     @ApiStatus.Internal
     void assignSceneHolder(final SceneInventoryHolder sceneInventoryHolder);

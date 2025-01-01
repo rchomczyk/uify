@@ -41,14 +41,14 @@ public class CanvasBaseElement implements CanvasElement {
     }
 
     @Override
-    public CanvasElement onElementDrag(final CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragConsumer) {
-        this.elementDragConsumer = this.elementDragConsumer.andThen(elementDragConsumer);
+    public CanvasElement onElementDrag(final CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragBehaviour) {
+        this.elementDragConsumer = this.elementDragConsumer.andThen(elementDragBehaviour);
         return this;
     }
 
     @Override
-    public CanvasElement onElementClick(final CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickConsumer) {
-        this.elementClickConsumer = this.elementClickConsumer.andThen(elementClickConsumer);
+    public CanvasElement onElementClick(final CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour) {
+        this.elementClickConsumer = this.elementClickConsumer.andThen(elementClickBehaviour);
         return this;
     }
 
