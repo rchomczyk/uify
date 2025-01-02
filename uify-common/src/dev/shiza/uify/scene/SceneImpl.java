@@ -3,7 +3,7 @@ package dev.shiza.uify.scene;
 import dev.shiza.uify.scene.view.AnvilView;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.ApiStatus;
@@ -17,7 +17,7 @@ public record SceneImpl(SceneView view,
                         Component title,
                         List<Canvas> canvases,
                         List<Player> viewers,
-                        Consumer<Player> sceneCloseBehaviour)
+                        BiConsumer<SceneInventoryHolder, Player> sceneCloseBehaviour)
     implements Scene {
 
     @Override
@@ -49,7 +49,7 @@ public record SceneImpl(SceneView view,
     }
 
     @Override
-    public Scene onSceneClose(final Consumer<Player> sceneCloseBehaviour) {
+    public Scene onSceneClose(final BiConsumer<SceneInventoryHolder, Player> sceneCloseBehaviour) {
         return new SceneImpl(view, title, canvases, viewers, this.sceneCloseBehaviour.andThen(sceneCloseBehaviour));
     }
 

@@ -17,7 +17,7 @@ public final class SceneInteractionListener implements Listener {
         if (event.getPlayer() instanceof Player player
             && inventory.getHolder() instanceof SceneInventoryHolder sceneInventoryHolder
             && sceneInventoryHolder.sceneMorph() instanceof SceneImpl scene) {
-            scene.sceneCloseBehaviour().accept(player);
+            scene.sceneCloseBehaviour().accept(sceneInventoryHolder, player);
         }
     }
 }
