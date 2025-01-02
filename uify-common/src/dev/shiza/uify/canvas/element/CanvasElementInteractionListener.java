@@ -22,10 +22,6 @@ public final class CanvasElementInteractionListener implements Listener {
 
             final int sceneSize = scene.view().estimatedSize() - 1;
             event.getRawSlots().forEach(rawSlot -> {
-                if (rawSlot < sceneSize) {
-                    event.setCancelled(true);
-                }
-
                 final IdentifiedCanvasElement identifiedElement = sceneInventoryHolder.renderedElements().get(rawSlot);
                 if (identifiedElement != null && identifiedElement.element() instanceof CanvasBaseElement canvasBaseElement) {
                     canvasBaseElement.elementDragConsumer().accept(
@@ -34,6 +30,8 @@ public final class CanvasElementInteractionListener implements Listener {
                             identifiedElement.canvas(),
                             canvasBaseElement),
                         event);
+                } else if (rawSlot < sceneSize) {
+                    event.setCancelled(true);
                 }
             });
         }
@@ -47,9 +45,6 @@ public final class CanvasElementInteractionListener implements Listener {
 
             final int sceneSize = scene.view().estimatedSize() - 1;
             final int rawSlot = event.getRawSlot();
-            if (rawSlot < sceneSize) {
-                event.setCancelled(true);
-            }
 
             final IdentifiedCanvasElement identifiedElement = sceneInventoryHolder.renderedElements().get(rawSlot);
             if (identifiedElement != null && identifiedElement.element() instanceof CanvasBaseElement canvasBaseElement) {
@@ -59,6 +54,8 @@ public final class CanvasElementInteractionListener implements Listener {
                         identifiedElement.canvas(),
                         canvasBaseElement),
                     event);
+            } else if (rawSlot < sceneSize) {
+                event.setCancelled(true);
             }
         }
     }
