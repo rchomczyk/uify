@@ -43,7 +43,7 @@ public final class ConsumingCanvasRenderer implements CanvasRenderer<ConsumingCa
         final Map<Position, CanvasElement> mutableBindingsByPosition = new HashMap<>();
 
         final List<CanvasElement> elements = parentCanvas.elements();
-        if (elements == null || elements.isEmpty()) {
+        if (elements == null) {
             return Map.of();
         }
 
