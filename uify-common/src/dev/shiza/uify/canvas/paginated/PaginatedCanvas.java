@@ -6,7 +6,6 @@ import java.util.function.UnaryOperator;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.position.Position;
-import org.jetbrains.annotations.ApiStatus;
 
 public interface PaginatedCanvas extends Canvas {
 
@@ -22,9 +21,12 @@ public interface PaginatedCanvas extends Canvas {
                     new Position(rows - 1, 8)));
     }
 
-    @ApiStatus.Experimental
     static PaginatedCanvas ofPattern(final char symbol, final String pattern) {
         return PaginatedCanvasImpl.ofPattern(symbol, pattern);
+    }
+
+    static PaginatedCanvas ofPattern(final char symbol, final String... patterns) {
+        return PaginatedCanvasImpl.ofPattern(symbol, patterns);
     }
 
     PaginatedCanvas page(final int page);

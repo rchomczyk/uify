@@ -4,6 +4,7 @@ import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import dev.shiza.uify.canvas.renderer.CanvasRenderer;
+import dev.shiza.uify.canvas.renderer.CanvasRenderingException;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
@@ -31,7 +32,7 @@ public final class SequentialCanvasRenderer implements CanvasRenderer<Sequential
         final int requiredSize = parentCanvas.elements().size();
         final int estimatedSize = estimatedSize((SceneImpl) parentScene, parentCanvas);
         if (requiredSize > estimatedSize) {
-            throw new SequentialCanvasRenderingException(
+            throw new CanvasRenderingException(
                 "Could not render sequential canvas because of insufficient size, required: %d, estimated size: %d".formatted(
                     requiredSize, estimatedSize));
         }

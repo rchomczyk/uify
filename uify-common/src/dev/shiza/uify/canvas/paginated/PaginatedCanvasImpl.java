@@ -1,6 +1,7 @@
 package dev.shiza.uify.canvas.paginated;
 
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import dev.shiza.uify.canvas.renderer.CanvasRenderingException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -43,7 +44,7 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
         }
 
         if (rows.length == 0) {
-            throw new PaginatedCanvasRenderingException("The pattern does not contain any rows.");
+            throw new CanvasRenderingException("The pattern does not contain any rows.");
         }
 
         final int columnsPerRow = rows[0].length();
@@ -52,6 +53,10 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
                 position
                     .minimum(0, 0)
                     .maximum(rows.length - 1, columnsPerRow - 1));
+    }
+
+    static PaginatedCanvas ofPattern(final char symbol, final String... patterns) {
+        return ofPattern(symbol, String.join(ROW_DELIMITER, patterns));
     }
 
     private static List<Position> positionsFromPattern(final char symbol, final String[] rows) {
@@ -84,7 +89,7 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
     @Override
     public PaginatedCanvas page(final int page) {
         if (page < 0 || page >= partitionedElements.size()) {
-            throw new PaginatedCanvasRenderingException("Invalid page number: " + page);
+            throw new CanvasRenderingException("Invalid page number: " + page);
         }
 
         this.currentPage = page;

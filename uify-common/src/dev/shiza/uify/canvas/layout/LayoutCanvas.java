@@ -12,6 +12,10 @@ public interface LayoutCanvas extends Canvas {
         return new LayoutCanvasImpl(pattern, Collections.emptyMap(), Collections.emptyMap());
     }
 
+    static LayoutCanvas ofPattern(final String... patterns) {
+        return new LayoutCanvasImpl(String.join("\n", patterns), Collections.emptyMap(), Collections.emptyMap());
+    }
+
     LayoutCanvas bind(final int row, final int column, final CanvasElement element);
 
     LayoutCanvas bind(final char source, final CanvasElement element);
