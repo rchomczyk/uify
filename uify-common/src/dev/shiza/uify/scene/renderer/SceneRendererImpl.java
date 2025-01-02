@@ -1,5 +1,7 @@
 package dev.shiza.uify.scene.renderer;
 
+import dev.shiza.uify.canvas.consume.ConsumingCanvas;
+import dev.shiza.uify.canvas.consume.ConsumingCanvasRenderer;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import dev.shiza.uify.canvas.sequential.SequentialCanvas;
 import dev.shiza.uify.canvas.sequential.SequentialCanvasRenderer;
@@ -21,11 +23,14 @@ final class SceneRendererImpl implements SceneRenderer {
 
     SceneRendererImpl() {
         final LayoutCanvasRenderer layoutCanvasRenderer = new LayoutCanvasRenderer();
+        final ConsumingCanvasRenderer consumingCanvasRenderer = new ConsumingCanvasRenderer();
         final PaginatedCanvasRenderer paginatedCanvasRenderer = new PaginatedCanvasRenderer();
         final SequentialCanvasRenderer sequentialCanvasRenderer = new SequentialCanvasRenderer();
         this.renderers = Map.of(
             LayoutCanvas.class, (holder, scene, canvas) ->
                 layoutCanvasRenderer.renderCanvas(holder.getInventory(), holder, scene, (LayoutCanvas) canvas),
+            ConsumingCanvas.class, (holder, scene, canvas) ->
+                consumingCanvasRenderer.renderCanvas(holder.getInventory(), holder, scene, (ConsumingCanvas) canvas),
             PaginatedCanvas.class, (holder, scene, canvas) ->
                 paginatedCanvasRenderer.renderCanvas(holder.getInventory(), holder, scene, (PaginatedCanvas) canvas),
             SequentialCanvas.class, (holder, scene, canvas) ->
