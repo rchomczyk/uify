@@ -1,6 +1,7 @@
 package dev.shiza.uify.canvas.layout;
 
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
@@ -19,22 +20,24 @@ final class LayoutCanvasImpl extends CanvasWithPosition implements LayoutCanvas 
         final Map<Character, CanvasElement> bindingsBySymbol,
         final Map<Position, CanvasElement> bindingsByPosition) {
         this.pattern = pattern;
-        this.bindingsBySymbol = bindingsBySymbol;
-        this.bindingsByPosition = bindingsByPosition;
+        this.bindingsBySymbol = Collections.unmodifiableMap(bindingsBySymbol);
+        this.bindingsByPosition = Collections.unmodifiableMap(bindingsByPosition);
     }
 
     @Override
     public LayoutCanvas bind(final int row, final int column, final CanvasElement element) {
         final Map<Position, CanvasElement> mutableBindings = new HashMap<>(this.bindingsByPosition);
         mutableBindings.put(new Position(row, column), element);
-        return new LayoutCanvasImpl(pattern, bindingsBySymbol, mutableBindings);
+        return new LayoutCanvasImpl(pattern, bindingsBySymbol, mutableBindings)
+            .position(__ -> super.position());
     }
 
     @Override
     public LayoutCanvas bind(final char source, final CanvasElement element) {
         final Map<Character, CanvasElement> mutableBindings = new HashMap<>(this.bindingsBySymbol);
         mutableBindings.put(source, element);
-        return new LayoutCanvasImpl(pattern, mutableBindings, bindingsByPosition);
+        return new LayoutCanvasImpl(pattern, mutableBindings, bindingsByPosition)
+            .position(__ -> super.position());
     }
 
     @Override

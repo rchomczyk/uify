@@ -8,6 +8,7 @@ import dev.shiza.uify.position.Position;
 import dev.shiza.uify.position.PositionUtils;
 import dev.shiza.uify.scene.SceneImpl;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -21,16 +22,17 @@ final class ConsumingCanvasImpl extends CanvasWithPosition implements ConsumingC
     private final List<CanvasElement> elements;
 
     ConsumingCanvasImpl(final List<CanvasElement> elements) {
-        this.elements = elements;
+        this.elements = Collections.unmodifiableList(elements);
     }
 
     @Override
     public ConsumingCanvas populate(final List<ItemStack> items) {
-        elements.addAll(
+        final List<CanvasElement> mutableElements = new ArrayList<>(elements);
+        mutableElements.addAll(
             items.stream()
                 .map(item -> new CanvasBaseElement(() -> item))
                 .toList());
-        return this;
+        return new ConsumingCanvasImpl(mutableElements).position(__ -> super.position());
     }
 
     @Override
