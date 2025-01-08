@@ -1,13 +1,14 @@
 package dev.shiza.uify.scene;
 
-import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
+import dev.shiza.uify.scene.behaviour.SceneGenericBehaviour;
 import java.util.Collections;
-import java.util.function.BiConsumer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
 import dev.shiza.uify.scene.view.ChestView;
 import dev.shiza.uify.scene.view.SceneView;
 import dev.shiza.uify.canvas.Canvas;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 
 public interface Scene {
 
@@ -29,9 +30,9 @@ public interface Scene {
 
     Scene viewer(final Player viewer);
 
-    Scene onSceneDispatch(final BiConsumer<SceneInventoryHolder, Player> sceneDispatchBehaviour);
+    Scene onSceneDispatch(final SceneGenericBehaviour<InventoryOpenEvent> sceneDispatchBehaviour);
 
-    Scene onSceneClose(final BiConsumer<SceneInventoryHolder, Player> sceneCloseBehaviour);
+    Scene onSceneClose(final SceneGenericBehaviour<InventoryCloseEvent> sceneCloseBehaviour);
 
     void dispatch();
 }

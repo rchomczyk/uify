@@ -1,11 +1,13 @@
 package dev.shiza.uify.scene;
 
+import dev.shiza.uify.scene.behaviour.SceneGenericBehaviour;
 import dev.shiza.uify.scene.view.AnvilView;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 import net.kyori.adventure.text.Component;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.jetbrains.annotations.ApiStatus;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
@@ -17,8 +19,8 @@ public record SceneImpl(SceneView view,
                         Component title,
                         List<Canvas> canvases,
                         List<Player> viewers,
-                        BiConsumer<SceneInventoryHolder, Player> sceneDispatchBehaviour,
-                        BiConsumer<SceneInventoryHolder, Player> sceneCloseBehaviour)
+                        SceneGenericBehaviour<InventoryOpenEvent> sceneDispatchBehaviour,
+                        SceneGenericBehaviour<InventoryCloseEvent> sceneCloseBehaviour)
     implements Scene {
 
     @Override
@@ -50,7 +52,7 @@ public record SceneImpl(SceneView view,
     }
 
     @Override
-    public Scene onSceneDispatch(final BiConsumer<SceneInventoryHolder, Player> sceneDispatchBehaviour) {
+    public Scene onSceneDispatch(final SceneGenericBehaviour<InventoryOpenEvent> sceneDispatchBehaviour) {
         return new SceneImpl(
             view,
             title,
@@ -61,7 +63,7 @@ public record SceneImpl(SceneView view,
     }
 
     @Override
-    public Scene onSceneClose(final BiConsumer<SceneInventoryHolder, Player> sceneCloseBehaviour) {
+    public Scene onSceneClose(final SceneGenericBehaviour<InventoryCloseEvent> sceneCloseBehaviour) {
         return new SceneImpl(
             view,
             title,
@@ -77,13 +79,9 @@ public record SceneImpl(SceneView view,
         final SceneImpl scene = (SceneImpl) sceneInventoryHolder.sceneMorph();
         if (scene.view() instanceof AnvilView && sceneInventoryHolder.anvilInventory() != null) {
             sceneInventoryHolder.anvilInventory().open();
-            scene.sceneDispatchBehaviour().accept(sceneInventoryHolder, scene.viewers().getFirst());
             return;
         }
 
-        viewers.forEach(viewer -> {
-            viewer.openInventory(sceneInventoryHolder.getInventory());
-            scene.sceneDispatchBehaviour().accept(sceneInventoryHolder, viewer);
-        });
+        viewers.forEach(viewer -> viewer.openInventory(sceneInventoryHolder.getInventory()));
     }
 }
