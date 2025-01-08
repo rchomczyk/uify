@@ -170,7 +170,9 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
 
         int index = 0;
         for (final CanvasPosition position : positionsToProcess()) {
-            index = fillIndexesForPosition(position, slotIndexes, index);
+            index = position.minimum().equals(position.minimum())
+                ? fillIndexesForDirectPosition(position, slotIndexes, index)
+                : fillIndexesForPosition(position, slotIndexes, index);
         }
 
         return slotIndexes;
@@ -200,6 +202,30 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
             }
 
             currentColumn = 0;
+            currentRow++;
+        }
+
+        return index;
+    }
+
+    private int fillIndexesForDirectPosition(
+        final CanvasPosition position,
+        final PrecalculatedSlotIndex[] slotIndexes,
+        final int startIndex) {
+        final int totalColumns = position.maximum().column() - position.minimum().column() + 1;
+        final Position minimum = position.minimum();
+        final Position maximum = position.maximum();
+
+        int index = startIndex;
+        int currentRow = minimum.row();
+        int currentColumn = minimum.column();
+        while (currentRow <= maximum.row()) {
+            while (currentColumn <= maximum.column()) {
+                final int slotIndex = (currentRow - minimum.row()) * totalColumns + (currentColumn - minimum.column());
+                slotIndexes[index++] = new PrecalculatedSlotIndex(currentRow, currentColumn, slotIndex);
+                currentColumn++;
+            }
+            currentColumn = minimum.column();
             currentRow++;
         }
 

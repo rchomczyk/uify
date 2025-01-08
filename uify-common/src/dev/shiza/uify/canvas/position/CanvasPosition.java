@@ -1,6 +1,7 @@
 package dev.shiza.uify.canvas.position;
 
 import dev.shiza.uify.position.Position;
+import java.util.Objects;
 
 public record CanvasPosition(Position minimum, Position maximum) {
 
@@ -27,5 +28,20 @@ public record CanvasPosition(Position minimum, Position maximum) {
 
     public CanvasPosition maximum(final int row, final int column) {
         return new CanvasPosition(minimum, new Position(row, column));
+    }
+
+    @Override
+    public boolean equals(final Object object) {
+        if (object == null || getClass() != object.getClass()) {
+            return false;
+        }
+
+        final CanvasPosition that = (CanvasPosition) object;
+        return Objects.equals(minimum, that.minimum) && Objects.equals(maximum, that.maximum);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(minimum, maximum);
     }
 }
