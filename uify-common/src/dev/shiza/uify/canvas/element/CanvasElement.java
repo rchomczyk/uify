@@ -1,6 +1,7 @@
 package dev.shiza.uify.canvas.element;
 
 import dev.shiza.uify.canvas.element.behaviour.CanvasElementBehaviour;
+import java.util.function.Supplier;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
@@ -19,8 +20,12 @@ public interface CanvasElement {
     CanvasElement onElementClick(
         final CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour);
 
-    @ApiStatus.Internal
-    void assignSceneHolder(final SceneInventoryHolder sceneInventoryHolder);
+    void transform(final ItemStack itemStack);
+
+    void transform(final Supplier<ItemStack> itemStack);
 
     void updateScene();
+
+    @ApiStatus.Internal
+    void assignSceneHolder(final SceneInventoryHolder sceneInventoryHolder);
 }

@@ -53,19 +53,19 @@ public class CanvasBaseElement implements CanvasElement {
     }
 
     @Override
-    public void assignSceneHolder(final SceneInventoryHolder sceneInventoryHolder) {
-        final Set<SceneInventoryHolder> mutableOwners = new HashSet<>(owners);
-        mutableOwners.add(sceneInventoryHolder);
-        owners = Collections.unmodifiableSet(mutableOwners);
+    public void transform(final ItemStack itemStack) {
+        transform(() -> itemStack);
+    }
+
+    @Override
+    public void transform(final Supplier<ItemStack> itemStack) {
+        this.itemStack = itemStack;
+        this.updateScene();
     }
 
     @Override
     public void updateScene() {
         owners.forEach(owner -> SceneRenderer.sceneRenderer().renderScene(owner.sceneMorph(), owner));
-    }
-
-    public void itemStack(final Supplier<ItemStack> itemStack) {
-        this.itemStack = itemStack;
     }
 
     public CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragConsumer() {
@@ -74,5 +74,12 @@ public class CanvasBaseElement implements CanvasElement {
 
     public CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickConsumer() {
         return elementClickConsumer;
+    }
+
+    @Override
+    public void assignSceneHolder(final SceneInventoryHolder sceneInventoryHolder) {
+        final Set<SceneInventoryHolder> mutableOwners = new HashSet<>(owners);
+        mutableOwners.add(sceneInventoryHolder);
+        owners = Collections.unmodifiableSet(mutableOwners);
     }
 }

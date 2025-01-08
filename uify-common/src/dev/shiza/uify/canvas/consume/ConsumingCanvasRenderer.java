@@ -10,9 +10,9 @@ import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
@@ -42,7 +42,7 @@ public final class ConsumingCanvasRenderer implements CanvasRenderer<ConsumingCa
         final ConsumingCanvasImpl parentCanvas) {
         final Map<Position, CanvasElement> mutableBindingsByPosition = new HashMap<>();
 
-        final List<CanvasElement> elements = parentCanvas.elements();
+        final Collection<CanvasElement> elements = parentCanvas.elements();
         if (elements == null) {
             return Map.of();
         }

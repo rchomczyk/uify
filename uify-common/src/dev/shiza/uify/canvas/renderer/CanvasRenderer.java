@@ -9,7 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import dev.shiza.uify.position.PositionUtils;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
-import dev.shiza.uify.canvas.CanvasWithPosition;
+import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
@@ -26,7 +26,7 @@ public interface CanvasRenderer<T> {
         final Inventory inventory,
         final SceneInventoryHolder sceneInventoryHolder,
         final Scene parentScene,
-        final CanvasWithPosition parentCanvas,
+        final BaseCanvas parentCanvas,
         final Map<Position, CanvasElement> bindingsByPosition) {
         final Map<Integer, IdentifiedCanvasElement> renderedElements = new HashMap<>();
 

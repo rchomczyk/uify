@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.paginated;
 
+import dev.shiza.uify.annotation.Mutable;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
@@ -7,6 +8,7 @@ import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.position.Position;
 
+@Mutable
 public interface PaginatedCanvas extends Canvas {
 
     static PaginatedCanvas of() {
@@ -36,6 +38,8 @@ public interface PaginatedCanvas extends Canvas {
     PaginatedCanvas backward();
 
     PaginatedCanvas populate(final Collection<CanvasElement> elements);
+
+    PaginatedCanvas populate(final Collection<CanvasElement> elements, final boolean override);
 
     @Override
     PaginatedCanvas position(final UnaryOperator<CanvasPosition> mutator);

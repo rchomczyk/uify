@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.UnaryOperator;
-import dev.shiza.uify.canvas.CanvasWithPosition;
+import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.position.Position;
 
-final class LayoutCanvasImpl extends CanvasWithPosition implements LayoutCanvas {
+final class LayoutCanvasImpl extends BaseCanvas implements LayoutCanvas {
 
     private final String pattern;
     private final Map<Character, CanvasElement> bindingsBySymbol;

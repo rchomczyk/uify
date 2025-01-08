@@ -6,31 +6,34 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.UnaryOperator;
-import dev.shiza.uify.canvas.CanvasWithPosition;
+import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.position.Position;
 
-final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedCanvas {
+final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
 
     private static final String ROW_DELIMITER = "\n";
     private final List<CanvasPosition> innerPositions;
+    private final List<CanvasElement> rawElements;
     private List<List<CanvasElement>> partitionedElements;
     private PrecalculatedSlotIndex[] precalculatedSlotIndexes;
     private int currentPage;
 
     PaginatedCanvasImpl(
         final List<CanvasPosition> innerPositions,
+        final List<CanvasElement> rawElements,
         final List<List<CanvasElement>> partitionedElements,
         final PrecalculatedSlotIndex[] precalculatedSlotIndexes,
         final int currentPage) {
         this.innerPositions = innerPositions;
+        this.rawElements = rawElements;
         this.partitionedElements = partitionedElements;
         this.precalculatedSlotIndexes = precalculatedSlotIndexes;
         this.currentPage = currentPage;
     }
 
     PaginatedCanvasImpl() {
-        this(new ArrayList<>(), List.of(), new PrecalculatedSlotIndex[0], 0);
+        this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new PrecalculatedSlotIndex[0], 0);
     }
 
     static PaginatedCanvas ofPattern(final char symbol, final String pattern) {
@@ -78,11 +81,21 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
 
     @Override
     public PaginatedCanvas populate(final Collection<CanvasElement> elements) {
+        return populate(elements, false);
+    }
+
+    @Override
+    public PaginatedCanvas populate(final Collection<CanvasElement> elements, final boolean override) {
+        if (override) {
+            rawElements.clear();
+        }
+        rawElements.addAll(elements);
+
         final int elementsPerPartition = innerPositions.isEmpty()
             ? calculateSlotsForPosition(position())
             : innerPositions.stream().mapToInt(this::calculateSlotsForPosition).sum();
-        this.partitionedElements = PaginatedCanvasUtils.partition(elements, elementsPerPartition);
-        this.precalculatedSlotIndexes = calculatePrecalculatedIndexes(elementsPerPartition);
+        partitionedElements = PaginatedCanvasUtils.partition(rawElements, elementsPerPartition);
+        precalculatedSlotIndexes = calculatePrecalculatedIndexes(elementsPerPartition);
         return this;
     }
 
@@ -170,15 +183,17 @@ final class PaginatedCanvasImpl extends CanvasWithPosition implements PaginatedC
         final Position maximum = position.maximum();
 
         int index = startIndex;
-        int currentRow = minimum.row();
-        int currentColumn = minimum.column();
-        while (currentRow <= maximum.row()) {
-            while (currentColumn <= maximum.column()) {
-                final int slotIndex = (currentRow - minimum.row()) * totalColumns + (currentColumn - minimum.column());
+
+        int currentRow = 0;
+        int currentColumn = 0;
+        while (currentRow <= (maximum.row() - minimum.row())) {
+            while (currentColumn <= (maximum.column() - minimum.column())) {
+                final int slotIndex = currentRow * totalColumns + currentColumn;
                 slotIndexes[index++] = new PrecalculatedSlotIndex(currentRow, currentColumn, slotIndex);
                 currentColumn++;
             }
-            currentColumn = minimum.column();
+
+            currentColumn = 0;
             currentRow++;
         }
 

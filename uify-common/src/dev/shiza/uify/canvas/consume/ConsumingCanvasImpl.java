@@ -1,14 +1,13 @@
 package dev.shiza.uify.canvas.consume;
 
-import dev.shiza.uify.canvas.CanvasWithPosition;
-import dev.shiza.uify.canvas.element.CanvasBaseElement;
+import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.position.PositionUtils;
 import dev.shiza.uify.scene.SceneImpl;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -17,22 +16,26 @@ import java.util.Map;
 import java.util.function.UnaryOperator;
 import org.bukkit.inventory.ItemStack;
 
-final class ConsumingCanvasImpl extends CanvasWithPosition implements ConsumingCanvas {
+final class ConsumingCanvasImpl extends BaseCanvas implements ConsumingCanvas {
 
-    private final List<CanvasElement> elements;
+    private final Collection<CanvasElement> mutableElements;
 
-    ConsumingCanvasImpl(final List<CanvasElement> elements) {
-        this.elements = Collections.unmodifiableList(elements);
+    ConsumingCanvasImpl(final Collection<CanvasElement> elements) {
+        this.mutableElements = elements;
     }
 
     @Override
-    public ConsumingCanvas populate(final List<ItemStack> items) {
-        final List<CanvasElement> mutableElements = new ArrayList<>(elements);
-        mutableElements.addAll(
-            items.stream()
-                .map(item -> new CanvasBaseElement(() -> item))
-                .toList());
-        return new ConsumingCanvasImpl(mutableElements).position(__ -> super.position());
+    public ConsumingCanvas populate(final Collection<CanvasElement> elements) {
+        return populate(elements, false);
+    }
+
+    @Override
+    public ConsumingCanvas populate(final Collection<CanvasElement> elements, final boolean override) {
+        if (override) {
+            mutableElements.clear();
+        }
+        mutableElements.addAll(elements);
+        return this;
     }
 
     @Override
@@ -76,7 +79,7 @@ final class ConsumingCanvasImpl extends CanvasWithPosition implements ConsumingC
             .toList();
     }
 
-    List<CanvasElement> elements() {
-        return elements;
+    Collection<CanvasElement> elements() {
+        return mutableElements;
     }
 }
