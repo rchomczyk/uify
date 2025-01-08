@@ -17,6 +17,7 @@ public interface Scene {
             Component.empty(),
             Collections.emptyList(),
             Collections.emptyList(),
+            (holder, viewer) -> {},
             (holder, viewer) -> {});
     }
 
@@ -27,6 +28,8 @@ public interface Scene {
     Scene canvas(final Canvas canvas);
 
     Scene viewer(final Player viewer);
+
+    Scene onSceneDispatch(final BiConsumer<SceneInventoryHolder, Player> sceneDispatchBehaviour);
 
     Scene onSceneClose(final BiConsumer<SceneInventoryHolder, Player> sceneCloseBehaviour);
 
