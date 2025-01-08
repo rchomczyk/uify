@@ -18,9 +18,9 @@ public interface SequentialCanvas extends Canvas {
 
     SequentialCanvas elements(final CanvasElement... elements);
 
-    SequentialCanvas elements(final Collection<CanvasElement> elements);
+    SequentialCanvas elements(final Collection<? extends CanvasElement> elements);
 
-    SequentialCanvas elements(final Collection<CanvasElement> elements, final boolean override);
+    SequentialCanvas elements(final Collection<? extends CanvasElement> elements, final boolean override);
 
     @Override
     SequentialCanvas position(final UnaryOperator<CanvasPosition> mutator);

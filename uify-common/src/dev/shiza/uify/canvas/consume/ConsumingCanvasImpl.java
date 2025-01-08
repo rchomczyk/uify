@@ -26,12 +26,12 @@ final class ConsumingCanvasImpl extends BaseCanvas implements ConsumingCanvas {
     }
 
     @Override
-    public ConsumingCanvas populate(final Collection<CanvasElement> elements) {
+    public ConsumingCanvas populate(final Collection<? extends CanvasElement> elements) {
         return populate(elements, false);
     }
 
     @Override
-    public ConsumingCanvas populate(final Collection<CanvasElement> elements, final boolean override) {
+    public ConsumingCanvas populate(final Collection<? extends CanvasElement> elements, final boolean override) {
         if (override) {
             mutableElements.clear();
         }

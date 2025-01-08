@@ -22,9 +22,9 @@ public interface ConsumingCanvas extends Canvas {
                     .maximum(rows - 1, 8));
     }
 
-    ConsumingCanvas populate(final Collection<CanvasElement> elements);
+    ConsumingCanvas populate(final Collection<? extends CanvasElement> elements);
 
-    ConsumingCanvas populate(final Collection<CanvasElement> elements, final boolean override);
+    ConsumingCanvas populate(final Collection<? extends CanvasElement> elements, final boolean override);
 
     @Override
     ConsumingCanvas position(final UnaryOperator<CanvasPosition> mutator);

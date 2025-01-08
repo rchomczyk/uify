@@ -22,12 +22,12 @@ final class SequentialCanvasImpl extends BaseCanvas implements SequentialCanvas 
     }
 
     @Override
-    public SequentialCanvas elements(final Collection<CanvasElement> elements) {
+    public SequentialCanvas elements(final Collection<? extends CanvasElement> elements) {
         return elements(elements, false);
     }
 
     @Override
-    public SequentialCanvas elements(final Collection<CanvasElement> elements, final boolean override) {
+    public SequentialCanvas elements(final Collection<? extends CanvasElement> elements, final boolean override) {
         if (override) {
             elements.clear();
         }

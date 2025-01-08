@@ -37,9 +37,9 @@ public interface PaginatedCanvas extends Canvas {
 
     PaginatedCanvas backward();
 
-    PaginatedCanvas populate(final Collection<CanvasElement> elements);
+    PaginatedCanvas populate(final Collection<? extends CanvasElement> elements);
 
-    PaginatedCanvas populate(final Collection<CanvasElement> elements, final boolean override);
+    PaginatedCanvas populate(final Collection<? extends CanvasElement> elements, final boolean override);
 
     @Override
     PaginatedCanvas position(final UnaryOperator<CanvasPosition> mutator);

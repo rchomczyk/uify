@@ -81,12 +81,12 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
     }
 
     @Override
-    public PaginatedCanvas populate(final Collection<CanvasElement> elements) {
+    public PaginatedCanvas populate(final Collection<? extends CanvasElement> elements) {
         return populate(elements, false);
     }
 
     @Override
-    public PaginatedCanvas populate(final Collection<CanvasElement> elements, final boolean override) {
+    public PaginatedCanvas populate(final Collection<? extends CanvasElement> elements, final boolean override) {
         if (override) {
             rawElements.clear();
         }
