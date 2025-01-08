@@ -48,6 +48,20 @@ final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
                 currentPartition.get(index));
         }
 
+        final PaginatedCanvasImpl.NavigationalItemBinding forwardItemBinding = parentCanvas.forwardItemBinding();
+        if (forwardItemBinding != null) {
+            mutableBindingsByPosition.put(
+                new Position(forwardItemBinding.row(), forwardItemBinding.column()),
+                forwardItemBinding.element());
+        }
+
+        final PaginatedCanvasImpl.NavigationalItemBinding backwardItemBinding = parentCanvas.backwardItemBinding();
+        if (backwardItemBinding != null) {
+            mutableBindingsByPosition.put(
+                new Position(backwardItemBinding.row(), backwardItemBinding.column()),
+                backwardItemBinding.element());
+        }
+
         return renderCanvasElements(
             inventory, sceneInventoryHolder, parentScene, parentCanvas, mutableBindingsByPosition);
     }

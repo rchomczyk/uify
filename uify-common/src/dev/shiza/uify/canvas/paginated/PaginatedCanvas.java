@@ -23,19 +23,27 @@ public interface PaginatedCanvas extends Canvas {
                     new Position(rows - 1, 8)));
     }
 
-    static PaginatedCanvas ofPattern(final char symbol, final String pattern) {
-        return PaginatedCanvasImpl.ofPattern(symbol, pattern);
+    static PaginatedCanvas ofPattern(final String pattern) {
+        return PaginatedCanvasImpl.ofPattern(pattern);
     }
 
-    static PaginatedCanvas ofPattern(final char symbol, final String... patterns) {
-        return PaginatedCanvasImpl.ofPattern(symbol, patterns);
+    static PaginatedCanvas ofPattern(final String... patterns) {
+        return PaginatedCanvasImpl.ofPattern(patterns);
     }
 
     PaginatedCanvas page(final int page);
 
     PaginatedCanvas forward();
 
+    PaginatedCanvas bindForward(final CanvasElement element);
+
+    PaginatedCanvas bindForward(final int row, final int column, final CanvasElement element);
+
     PaginatedCanvas backward();
+
+    PaginatedCanvas bindBackward(final CanvasElement element);
+
+    PaginatedCanvas bindBackward(final int row, final int column, final CanvasElement element);
 
     PaginatedCanvas populate(final Collection<? extends CanvasElement> elements);
 
