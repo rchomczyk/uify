@@ -1,6 +1,7 @@
 package dev.shiza.uify.canvas.sequential;
 
 import dev.shiza.uify.canvas.BaseCanvas;
+import dev.shiza.uify.canvas.CanvasMapperRenderer;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.Arrays;
@@ -38,6 +39,11 @@ final class SequentialCanvasImpl extends BaseCanvas implements SequentialCanvas 
     public SequentialCanvas position(final UnaryOperator<CanvasPosition> mutator) {
         super.position(mutator);
         return this;
+    }
+
+    @Override
+    public CanvasMapperRenderer mapper() {
+        return SequentialCanvasRenderer.InstanceHolder.MAPPER;
     }
 
     Collection<CanvasElement> elements() {

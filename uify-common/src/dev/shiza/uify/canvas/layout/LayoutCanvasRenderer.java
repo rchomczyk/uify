@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.layout;
 
+import dev.shiza.uify.canvas.CanvasMapperRenderer;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import java.util.HashMap;
 import java.util.Map;
@@ -11,11 +12,13 @@ import dev.shiza.uify.canvas.renderer.CanvasRenderingException;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 
-public final class LayoutCanvasRenderer implements CanvasRenderer<LayoutCanvas> {
+final class LayoutCanvasRenderer implements CanvasRenderer<LayoutCanvas> {
 
     private static final String ROW_DELIMITER = "\n";
     private static final String COLUMN_DELIMITER = "";
     private static final char COLUMN_UNDEFINED = ' ';
+
+    LayoutCanvasRenderer() {}
 
     @Override
     public Map<Integer, IdentifiedCanvasElement> renderCanvas(
@@ -61,5 +64,14 @@ public final class LayoutCanvasRenderer implements CanvasRenderer<LayoutCanvas> 
 
         return renderCanvasElements(
             inventory, sceneInventoryHolder, parentScene, parentCanvas, mutableBindingsByPosition);
+    }
+
+    static final class InstanceHolder {
+
+        static final CanvasRenderer<LayoutCanvas> RENDERER = new LayoutCanvasRenderer();
+        static final CanvasMapperRenderer MAPPER = (holder, scene, canvas) ->
+            RENDERER.renderCanvas(holder.getInventory(), holder, scene, (LayoutCanvas) canvas);
+
+        private InstanceHolder() {}
     }
 }

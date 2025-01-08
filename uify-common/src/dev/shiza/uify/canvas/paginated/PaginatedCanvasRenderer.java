@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.paginated;
 
+import dev.shiza.uify.canvas.CanvasMapperRenderer;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import java.util.Collections;
 import java.util.HashMap;
@@ -13,7 +14,9 @@ import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 
-public final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
+final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
+
+    PaginatedCanvasRenderer() {}
 
     @Override
     public Map<Integer, IdentifiedCanvasElement> renderCanvas(
@@ -47,5 +50,14 @@ public final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCa
 
         return renderCanvasElements(
             inventory, sceneInventoryHolder, parentScene, parentCanvas, mutableBindingsByPosition);
+    }
+
+    static final class InstanceHolder {
+
+        static final CanvasRenderer<PaginatedCanvas> RENDERER = new PaginatedCanvasRenderer();
+        static final CanvasMapperRenderer MAPPER = (holder, scene, canvas) ->
+            RENDERER.renderCanvas(holder.getInventory(), holder, scene, (PaginatedCanvas) canvas);
+
+        private InstanceHolder() {}
     }
 }

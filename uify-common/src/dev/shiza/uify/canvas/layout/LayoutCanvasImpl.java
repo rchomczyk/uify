@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.layout;
 
+import dev.shiza.uify.canvas.CanvasMapperRenderer;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.Collections;
 import java.util.HashMap;
@@ -44,6 +45,11 @@ final class LayoutCanvasImpl extends BaseCanvas implements LayoutCanvas {
     public LayoutCanvas position(final UnaryOperator<CanvasPosition> mutator) {
         super.position(mutator);
         return this;
+    }
+
+    @Override
+    public CanvasMapperRenderer mapper() {
+        return LayoutCanvasRenderer.InstanceHolder.MAPPER;
     }
 
     String pattern() {

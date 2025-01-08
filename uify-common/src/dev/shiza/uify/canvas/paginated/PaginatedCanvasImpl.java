@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.paginated;
 
+import dev.shiza.uify.canvas.CanvasMapperRenderer;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import dev.shiza.uify.canvas.renderer.CanvasRenderingException;
 import java.util.ArrayList;
@@ -135,6 +136,11 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
     public PaginatedCanvas positionInner(final UnaryOperator<CanvasPosition> canvasPosition) {
         innerPositions.add(canvasPosition.apply(new CanvasPosition()));
         return this;
+    }
+
+    @Override
+    public CanvasMapperRenderer mapper() {
+        return PaginatedCanvasRenderer.InstanceHolder.MAPPER;
     }
 
     @Override

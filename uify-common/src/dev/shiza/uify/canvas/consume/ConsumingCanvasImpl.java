@@ -1,6 +1,7 @@
 package dev.shiza.uify.canvas.consume;
 
 import dev.shiza.uify.canvas.BaseCanvas;
+import dev.shiza.uify.canvas.CanvasMapperRenderer;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import dev.shiza.uify.position.Position;
@@ -42,6 +43,11 @@ final class ConsumingCanvasImpl extends BaseCanvas implements ConsumingCanvas {
     public ConsumingCanvas position(final UnaryOperator<CanvasPosition> mutator) {
         super.position(mutator);
         return this;
+    }
+
+    @Override
+    public CanvasMapperRenderer mapper() {
+        return ConsumingCanvasRenderer.InstanceHolder.MAPPER;
     }
 
     @Override

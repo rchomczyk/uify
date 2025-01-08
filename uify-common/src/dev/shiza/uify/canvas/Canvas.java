@@ -8,5 +8,7 @@ public interface Canvas {
 
     Canvas position(final UnaryOperator<CanvasPosition> mutator);
 
+    CanvasMapperRenderer mapper();
+
     <T extends Canvas> Optional<T> typed(final Class<T> canvasType);
 }

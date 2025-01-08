@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.consume;
 
+import dev.shiza.uify.canvas.CanvasMapperRenderer;
 import dev.shiza.uify.canvas.element.CanvasBaseElement;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
@@ -18,9 +19,11 @@ import org.bukkit.Material;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-public final class ConsumingCanvasRenderer implements CanvasRenderer<ConsumingCanvas> {
+final class ConsumingCanvasRenderer implements CanvasRenderer<ConsumingCanvas> {
 
     private static final CanvasBaseElement EMPTY_ELEMENT = new CanvasBaseElement(() -> new ItemStack(Material.AIR));
+
+    ConsumingCanvasRenderer() {}
 
     @Override
     public Map<Integer, IdentifiedCanvasElement> renderCanvas(
@@ -71,5 +74,14 @@ public final class ConsumingCanvasRenderer implements CanvasRenderer<ConsumingCa
 
         return renderCanvasElements(
             inventory, sceneInventoryHolder, parentScene, parentCanvas, mutableBindingsByPosition);
+    }
+
+    static final class InstanceHolder {
+
+        static final CanvasRenderer<ConsumingCanvas> RENDERER = new ConsumingCanvasRenderer();
+        static final CanvasMapperRenderer MAPPER = (holder, scene, canvas) ->
+            RENDERER.renderCanvas(holder.getInventory(), holder, scene, (ConsumingCanvas) canvas);
+
+        private InstanceHolder() {}
     }
 }

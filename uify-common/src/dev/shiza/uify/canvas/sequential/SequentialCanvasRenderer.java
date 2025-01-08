@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.sequential;
 
+import dev.shiza.uify.canvas.CanvasMapperRenderer;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
@@ -13,7 +14,9 @@ import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.inventory.Inventory;
 
-public final class SequentialCanvasRenderer implements CanvasRenderer<SequentialCanvas> {
+final class SequentialCanvasRenderer implements CanvasRenderer<SequentialCanvas> {
+
+    SequentialCanvasRenderer() {}
 
     @Override
     public Map<Integer, IdentifiedCanvasElement> renderCanvas(
@@ -67,5 +70,14 @@ public final class SequentialCanvasRenderer implements CanvasRenderer<Sequential
 
     private boolean hasPredefinedBounds(final CanvasPosition canvasPosition) {
         return canvasPosition.minimum() != null && canvasPosition.maximum() != null;
+    }
+
+    static final class InstanceHolder {
+
+        static final CanvasRenderer<SequentialCanvas> RENDERER = new SequentialCanvasRenderer();
+        static final CanvasMapperRenderer MAPPER = (holder, scene, canvas) ->
+            RENDERER.renderCanvas(holder.getInventory(), holder, scene, (SequentialCanvas) canvas);
+
+        private InstanceHolder() {}
     }
 }
