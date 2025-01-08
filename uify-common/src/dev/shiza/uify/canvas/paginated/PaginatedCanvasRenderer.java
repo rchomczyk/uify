@@ -1,6 +1,7 @@
 package dev.shiza.uify.canvas.paginated;
 
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -31,7 +32,9 @@ public final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCa
         final Map<Position, CanvasElement> mutableBindingsByPosition = new HashMap<>();
 
         final List<List<CanvasElement>> partitionedElements = parentCanvas.partitionedElements();
-        final List<CanvasElement> currentPartition = partitionedElements.get(parentCanvas.currentPage());
+        final List<CanvasElement> currentPartition = partitionedElements.isEmpty()
+            ? Collections.emptyList()
+            : partitionedElements.get(parentCanvas.currentPage());
 
         final PrecalculatedSlotIndex[] precalculatedSlotIndexes = parentCanvas.precalculatedSlotIndexes();
         final int elementsCount = currentPartition.size();
