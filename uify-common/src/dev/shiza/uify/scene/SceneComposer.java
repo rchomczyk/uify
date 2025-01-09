@@ -9,7 +9,7 @@ public final class SceneComposer {
 
     private SceneComposer() {}
 
-    static Scene compose() {
+    public static Scene compose() {
         return new SceneImpl(
             ChestView.ofRows(3),
             Component.empty(),
@@ -19,7 +19,7 @@ public final class SceneComposer {
             (holder, viewer) -> {});
     }
 
-    static Scene compose(final SceneView sceneView) {
+    public static Scene compose(final SceneView sceneView) {
         return compose().view(sceneView);
     }
 }
