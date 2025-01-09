@@ -2,9 +2,7 @@ package dev.shiza.uify.scene.view;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryType;
-import org.jetbrains.annotations.ApiStatus;
 
-@ApiStatus.Experimental
 public record AnvilView(Player viewer) implements SceneView {
 
     private static final int COLUMNS_PER_ROW = 3;
