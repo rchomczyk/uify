@@ -43,7 +43,7 @@ public record SceneImpl(SceneView view,
     @Override
     public Scene viewer(final Player viewer) {
         if (view instanceof AnvilView) {
-            throw new SceneConfigurationException("You cannot add more than one viewer to anvil view.");
+            throw new SceneComposingException("You cannot add more than one viewer to anvil view.");
         }
 
         final List<Player> mutableViewers = new ArrayList<>(viewers);

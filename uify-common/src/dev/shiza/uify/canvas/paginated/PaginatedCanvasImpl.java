@@ -13,7 +13,7 @@ import dev.shiza.uify.position.Position;
 final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
 
     private static final String ROW_DELIMITER = "\n";
-    private final List<CanvasPosition> innerPositions;
+    private final List<CanvasPosition> compositions;
     private final List<CanvasElement> rawElements;
     private List<List<CanvasElement>> partitionedElements;
     private PrecalculatedSlotIndex[] precalculatedSlotIndexes;
@@ -23,12 +23,12 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
     private int currentPage;
 
     PaginatedCanvasImpl(
-        final List<CanvasPosition> innerPositions,
+        final List<CanvasPosition> compositions,
         final List<CanvasElement> rawElements,
         final List<List<CanvasElement>> partitionedElements,
         final PrecalculatedSlotIndex[] precalculatedSlotIndexes,
         final int currentPage) {
-        this.innerPositions = innerPositions;
+        this.compositions = compositions;
         this.rawElements = rawElements;
         this.partitionedElements = partitionedElements;
         this.precalculatedSlotIndexes = precalculatedSlotIndexes;
@@ -46,7 +46,7 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
 
         paginatedCanvas.predefinedBindings = positionsFromPattern(rows);
         for (final Position position : paginatedCanvas.predefinedBindings.contentPositions()) {
-            paginatedCanvas.positionInner(__ -> CanvasPosition.pos(position));
+            paginatedCanvas.compose(__ -> CanvasPosition.pos(position));
         }
 
         if (rows.length == 0) {
@@ -125,9 +125,9 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
         }
         rawElements.addAll(elements);
 
-        final int elementsPerPartition = innerPositions.isEmpty()
+        final int elementsPerPartition = compositions.isEmpty()
             ? calculateSlotsForPosition(position())
-            : innerPositions.stream().mapToInt(this::calculateSlotsForPosition).sum();
+            : compositions.stream().mapToInt(this::calculateSlotsForPosition).sum();
         partitionedElements = PaginatedCanvasUtils.partition(rawElements, elementsPerPartition);
         precalculatedSlotIndexes = calculatePrecalculatedIndexes(elementsPerPartition);
         return this;
@@ -152,18 +152,18 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
     }
 
     @Override
-    public PaginatedCanvas bindForward(final CanvasElement element) {
+    public PaginatedCanvas forward(final CanvasElement element) {
         final Position position = predefinedBindings.navbarPositions().forward();
         if (position == null) {
             throw new PaginatedCanvasBindingException(
                 "Navbar position is not defined. Use PaginatedCanvas#forward(int, int, CanvasElement) to define it.");
         }
 
-        return bindForward(position.row(), position.column(), element);
+        return forward(position.row(), position.column(), element);
     }
 
     @Override
-    public PaginatedCanvas bindForward(final int row, final int column, final CanvasElement element) {
+    public PaginatedCanvas forward(final int row, final int column, final CanvasElement element) {
         forwardItemBinding = new NavigationalItemBinding(
             row, column,
             element.onElementClick((state, event) -> {
@@ -184,18 +184,18 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
     }
 
     @Override
-    public PaginatedCanvas bindBackward(final CanvasElement element) {
+    public PaginatedCanvas backward(final CanvasElement element) {
         final Position position = predefinedBindings.navbarPositions().backward();
         if (position == null) {
             throw new PaginatedCanvasBindingException(
                 "Navbar position is not defined. Use PaginatedCanvas#backward(int, int, CanvasElement) to define it.");
         }
 
-        return bindBackward(position.row(), position.column(), element);
+        return backward(position.row(), position.column(), element);
     }
 
     @Override
-    public PaginatedCanvas bindBackward(final int row, final int column, final CanvasElement element) {
+    public PaginatedCanvas backward(final int row, final int column, final CanvasElement element) {
         backwardItemBinding = new NavigationalItemBinding(
             row, column,
             element.onElementClick((state, event) -> {
@@ -208,14 +208,14 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
     }
 
     @Override
-    public PaginatedCanvas position(final UnaryOperator<CanvasPosition> mutator) {
-        super.position(mutator);
+    public PaginatedCanvas compose(final UnaryOperator<CanvasPosition> mutator) {
+        compositions.add(mutator.apply(new CanvasPosition()));
         return this;
     }
 
     @Override
-    public PaginatedCanvas positionInner(final UnaryOperator<CanvasPosition> canvasPosition) {
-        innerPositions.add(canvasPosition.apply(new CanvasPosition()));
+    public PaginatedCanvas position(final UnaryOperator<CanvasPosition> mutator) {
+        super.position(mutator);
         return this;
     }
 
@@ -268,7 +268,7 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
     }
 
     private List<CanvasPosition> positionsToProcess() {
-        return innerPositions.isEmpty() ? List.of(position()) : innerPositions;
+        return compositions.isEmpty() ? List.of(position()) : compositions;
     }
 
     private int fillIndexesForPosition(

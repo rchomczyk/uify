@@ -1,6 +1,5 @@
 package dev.shiza.uify.canvas.consume;
 
-import dev.shiza.uify.annotation.Mutable;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
@@ -11,10 +10,9 @@ import java.util.List;
 import java.util.function.UnaryOperator;
 import org.bukkit.inventory.ItemStack;
 
-@Mutable
 public interface ConsumingCanvas extends Canvas {
 
-    static ConsumingCanvas ofRows(final int rows) {
+    static ConsumingCanvas rows(final int rows) {
         return new ConsumingCanvasImpl(new ArrayList<>())
             .position(
                 position -> position

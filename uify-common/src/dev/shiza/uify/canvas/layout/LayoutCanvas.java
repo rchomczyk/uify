@@ -8,11 +8,11 @@ import dev.shiza.uify.canvas.element.CanvasElement;
 
 public interface LayoutCanvas extends Canvas {
 
-    static LayoutCanvas ofPattern(final String pattern) {
+    static LayoutCanvas pattern(final String pattern) {
         return new LayoutCanvasImpl(pattern, Collections.emptyMap(), Collections.emptyMap());
     }
 
-    static LayoutCanvas ofPattern(final String... patterns) {
+    static LayoutCanvas pattern(final String... patterns) {
         return new LayoutCanvasImpl(String.join("\n", patterns), Collections.emptyMap(), Collections.emptyMap());
     }
 
