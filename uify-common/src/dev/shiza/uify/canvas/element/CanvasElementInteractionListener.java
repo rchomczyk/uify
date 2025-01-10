@@ -1,6 +1,6 @@
 package dev.shiza.uify.canvas.element;
 
-import dev.shiza.uify.canvas.element.behaviour.CanvasElementBehaviourState;
+import dev.shiza.uify.canvas.element.behaviour.CanvasElementGenericBehaviourState;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -25,7 +25,7 @@ public final class CanvasElementInteractionListener implements Listener {
                 final IdentifiedCanvasElement identifiedElement = sceneInventoryHolder.renderedElements().get(rawSlot);
                 if (identifiedElement != null && identifiedElement.element() instanceof CanvasBaseElement canvasBaseElement) {
                     canvasBaseElement.elementDragConsumer().accept(
-                        new CanvasElementBehaviourState<>(
+                        new CanvasElementGenericBehaviourState<>(
                             sceneInventoryHolder,
                             identifiedElement.canvas(),
                             canvasBaseElement),
@@ -49,7 +49,7 @@ public final class CanvasElementInteractionListener implements Listener {
             final IdentifiedCanvasElement identifiedElement = sceneInventoryHolder.renderedElements().get(rawSlot);
             if (identifiedElement != null && identifiedElement.element() instanceof CanvasBaseElement canvasBaseElement) {
                 canvasBaseElement.elementClickConsumer().accept(
-                    new CanvasElementBehaviourState<>(
+                    new CanvasElementGenericBehaviourState<>(
                         sceneInventoryHolder,
                         identifiedElement.canvas(),
                         canvasBaseElement),

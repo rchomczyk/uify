@@ -1,11 +1,13 @@
 package dev.shiza.uify.canvas.paginated;
 
+import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.position.Position;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public interface PaginatedCanvas extends Canvas {
 
@@ -51,6 +53,9 @@ public interface PaginatedCanvas extends Canvas {
 
     @Override
     PaginatedCanvas position(final UnaryOperator<CanvasPosition> mutator);
+
+    @Override
+    PaginatedCanvas onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour);
 
     int pages();
 

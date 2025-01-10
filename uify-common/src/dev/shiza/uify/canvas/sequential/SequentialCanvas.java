@@ -1,11 +1,13 @@
 package dev.shiza.uify.canvas.sequential;
 
 import dev.shiza.uify.canvas.Canvas;
+import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public interface SequentialCanvas extends Canvas {
 
@@ -22,4 +24,7 @@ public interface SequentialCanvas extends Canvas {
 
     @Override
     SequentialCanvas position(final UnaryOperator<CanvasPosition> mutator);
+
+    @Override
+    SequentialCanvas onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour);
 }

@@ -1,6 +1,6 @@
 package dev.shiza.uify.canvas.element;
 
-import dev.shiza.uify.canvas.element.behaviour.CanvasElementBehaviour;
+import dev.shiza.uify.canvas.element.behaviour.CanvasElementGenericBehaviour;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
@@ -16,9 +16,9 @@ import dev.shiza.uify.scene.renderer.SceneRenderer;
 public class CanvasBaseElement implements CanvasElement {
 
     private Supplier<ItemStack> itemStack;
-    private CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragConsumer =
+    private CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragConsumer =
         (state, event) -> {};
-    private CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickConsumer =
+    private CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickConsumer =
         (state, event) -> {};
     private Set<SceneInventoryHolder> owners = Collections.emptySet();
 
@@ -28,8 +28,8 @@ public class CanvasBaseElement implements CanvasElement {
 
     public CanvasBaseElement(
         final Supplier<ItemStack> itemStack,
-        final CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragConsumer,
-        final CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickConsumer) {
+        final CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragConsumer,
+        final CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickConsumer) {
         this.itemStack = itemStack;
         this.elementDragConsumer = elementDragConsumer;
         this.elementClickConsumer = elementClickConsumer;
@@ -41,13 +41,13 @@ public class CanvasBaseElement implements CanvasElement {
     }
 
     @Override
-    public CanvasElement onElementDrag(final CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragBehaviour) {
+    public CanvasElement onElementDrag(final CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragBehaviour) {
         this.elementDragConsumer = this.elementDragConsumer.andThen(elementDragBehaviour);
         return this;
     }
 
     @Override
-    public CanvasElement onElementClick(final CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour) {
+    public CanvasElement onElementClick(final CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour) {
         this.elementClickConsumer = this.elementClickConsumer.andThen(elementClickBehaviour);
         return this;
     }
@@ -68,11 +68,11 @@ public class CanvasBaseElement implements CanvasElement {
         owners.forEach(owner -> SceneRenderer.sceneRenderer().renderScene(owner.sceneMorph(), owner));
     }
 
-    public CanvasElementBehaviour<Canvas, InventoryDragEvent> elementDragConsumer() {
+    public CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragConsumer() {
         return elementDragConsumer;
     }
 
-    public CanvasElementBehaviour<Canvas, InventoryClickEvent> elementClickConsumer() {
+    public CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickConsumer() {
         return elementClickConsumer;
     }
 

@@ -1,7 +1,10 @@
 package dev.shiza.uify.canvas.consume;
 
 import dev.shiza.uify.canvas.BaseCanvas;
+import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.CanvasMapperRenderer;
+import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
+import dev.shiza.uify.canvas.element.CanvasBaseElement;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import dev.shiza.uify.position.Position;
@@ -15,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.UnaryOperator;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
 final class ConsumingCanvasImpl extends BaseCanvas implements ConsumingCanvas {
@@ -23,6 +27,20 @@ final class ConsumingCanvasImpl extends BaseCanvas implements ConsumingCanvas {
 
     ConsumingCanvasImpl(final Collection<CanvasElement> elements) {
         this.mutableElements = elements;
+    }
+
+    @Override
+    public ConsumingCanvas populateItems(final Collection<ItemStack> items) {
+        return populateItems(items, false);
+    }
+
+    @Override
+    public ConsumingCanvas populateItems(final Collection<ItemStack> items, final boolean override) {
+        return populate(
+            items.stream()
+                .map(item -> new CanvasBaseElement(() -> item))
+                .toList(),
+            override);
     }
 
     @Override
@@ -42,6 +60,12 @@ final class ConsumingCanvasImpl extends BaseCanvas implements ConsumingCanvas {
     @Override
     public ConsumingCanvas position(final UnaryOperator<CanvasPosition> mutator) {
         super.position(mutator);
+        return this;
+    }
+
+    @Override
+    public ConsumingCanvas onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour) {
+        super.onCanvasClose(canvasCloseBehaviour);
         return this;
     }
 

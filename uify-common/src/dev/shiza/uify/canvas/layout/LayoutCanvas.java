@@ -1,10 +1,12 @@
 package dev.shiza.uify.canvas.layout;
 
+import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.Collections;
 import java.util.function.UnaryOperator;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public interface LayoutCanvas extends Canvas {
 
@@ -22,4 +24,7 @@ public interface LayoutCanvas extends Canvas {
 
     @Override
     LayoutCanvas position(final UnaryOperator<CanvasPosition> mutator);
+
+    @Override
+    LayoutCanvas onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour);
 }
