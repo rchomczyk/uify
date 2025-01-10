@@ -10,7 +10,6 @@ import dev.shiza.uify.canvas.renderer.CanvasRenderingException;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
-import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,20 +26,12 @@ final class ConsumingCanvasRenderer implements CanvasRenderer<ConsumingCanvas> {
 
     @Override
     public Map<Integer, IdentifiedCanvasElement> renderCanvas(
-        final Inventory inventory,
-        final SceneInventoryHolder sceneInventoryHolder,
-        final Scene parentScene,
-        final ConsumingCanvas parentCanvas) {
-        return renderCanvas(
-            inventory,
-            sceneInventoryHolder,
-            (SceneImpl) parentScene,
-            (ConsumingCanvasImpl) parentCanvas);
+        final Inventory inventory, final Scene parentScene, final ConsumingCanvas parentCanvas) {
+        return renderCanvas(inventory, (SceneImpl) parentScene, (ConsumingCanvasImpl) parentCanvas);
     }
 
     private Map<Integer, IdentifiedCanvasElement> renderCanvas(
         final Inventory inventory,
-        final SceneInventoryHolder sceneInventoryHolder,
         final SceneImpl parentScene,
         final ConsumingCanvasImpl parentCanvas) {
         final Map<Position, CanvasElement> mutableBindingsByPosition = new HashMap<>();
@@ -73,14 +64,14 @@ final class ConsumingCanvasRenderer implements CanvasRenderer<ConsumingCanvas> {
         }
 
         return renderCanvasElements(
-            inventory, sceneInventoryHolder, parentScene, parentCanvas, mutableBindingsByPosition);
+            inventory, parentScene, parentCanvas, mutableBindingsByPosition);
     }
 
     static final class InstanceHolder {
 
         static final CanvasRenderer<ConsumingCanvas> RENDERER = new ConsumingCanvasRenderer();
         static final CanvasMapperRenderer MAPPER = (holder, scene, canvas) ->
-            RENDERER.renderCanvas(holder.getInventory(), holder, scene, (ConsumingCanvas) canvas);
+            RENDERER.renderCanvas(holder.getInventory(), scene, (ConsumingCanvas) canvas);
 
         private InstanceHolder() {}
     }

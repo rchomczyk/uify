@@ -1,7 +1,6 @@
 package dev.shiza.uify.canvas.element;
 
 import dev.shiza.uify.canvas.element.behaviour.CanvasElementGenericBehaviour;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -10,8 +9,6 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.canvas.Canvas;
-import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
-import dev.shiza.uify.scene.renderer.SceneRenderer;
 
 public class CanvasBaseElement implements CanvasElement {
 
@@ -20,7 +17,7 @@ public class CanvasBaseElement implements CanvasElement {
         (state, event) -> {};
     private CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickConsumer =
         (state, event) -> {};
-    private Set<SceneInventoryHolder> owners = Collections.emptySet();
+    private final Set<Canvas> owners = new HashSet<>();
 
     public CanvasBaseElement(final Supplier<ItemStack> itemStack) {
         this.itemStack = itemStack;
@@ -53,19 +50,19 @@ public class CanvasBaseElement implements CanvasElement {
     }
 
     @Override
-    public void transform(final ItemStack itemStack) {
-        transform(() -> itemStack);
+    public void assign(final Canvas canvas) {
+        owners.add(canvas);
+    }
+
+    @Override
+    public void update() {
+        owners.forEach(Canvas::update);
     }
 
     @Override
     public void transform(final Supplier<ItemStack> itemStack) {
         this.itemStack = itemStack;
-        this.updateScene();
-    }
-
-    @Override
-    public void updateScene() {
-        owners.forEach(owner -> SceneRenderer.sceneRenderer().renderScene(owner.sceneMorph(), owner));
+        this.update();
     }
 
     public CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragConsumer() {
@@ -74,12 +71,5 @@ public class CanvasBaseElement implements CanvasElement {
 
     public CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickConsumer() {
         return elementClickConsumer;
-    }
-
-    @Override
-    public void assignSceneHolder(final SceneInventoryHolder sceneInventoryHolder) {
-        final Set<SceneInventoryHolder> mutableOwners = new HashSet<>(owners);
-        mutableOwners.add(sceneInventoryHolder);
-        owners = Collections.unmodifiableSet(mutableOwners);
     }
 }

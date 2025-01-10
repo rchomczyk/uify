@@ -1,9 +1,9 @@
 package dev.shiza.uify.scene.renderer;
 
+import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import java.util.HashMap;
 import java.util.Map;
-import org.bukkit.inventory.Inventory;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
 import dev.shiza.uify.canvas.Canvas;
@@ -23,15 +23,18 @@ final class SceneRendererImpl implements SceneRenderer {
     public SceneInventoryHolder renderScene(final Scene sceneMorph, final SceneInventoryHolder sceneInventoryHolder) {
         final SceneImpl scene = (SceneImpl) sceneMorph;
 
-        final Inventory sceneInventory = sceneInventoryHolder.getInventory();
-        sceneInventory.clear();
-
-        final Map<Integer, IdentifiedCanvasElement> renderedElements = new HashMap<>();
+        final Map<Integer, IdentifiedCanvasElement> aggregatedElements = new HashMap<>();
         for (final Canvas canvas : scene.canvases()) {
-            renderedElements.putAll(canvas.mapper().renderCanvas(sceneInventoryHolder, scene, canvas));
+            canvas.assign(sceneInventoryHolder);
+
+            final Map<Integer, IdentifiedCanvasElement> renderedElements =
+                canvas.mapper().renderCanvas(sceneInventoryHolder, scene, canvas);
+            ((BaseCanvas) canvas).renderedElements(renderedElements);
+
+            aggregatedElements.putAll(renderedElements);
         }
 
-        sceneInventoryHolder.renderedElements(renderedElements);
+        sceneInventoryHolder.renderedElements(aggregatedElements);
         return sceneInventoryHolder;
     }
 }

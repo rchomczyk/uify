@@ -12,7 +12,6 @@ import dev.shiza.uify.canvas.paginated.PaginatedCanvasImpl.PrecalculatedSlotInde
 import dev.shiza.uify.canvas.renderer.CanvasRenderer;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.Scene;
-import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 
 final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
 
@@ -20,18 +19,12 @@ final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
 
     @Override
     public Map<Integer, IdentifiedCanvasElement> renderCanvas(
-        final Inventory inventory,
-        final SceneInventoryHolder sceneInventoryHolder,
-        final Scene parentScene,
-        final PaginatedCanvas parentCanvas) {
-        return renderCanvas(inventory, sceneInventoryHolder, parentScene, (PaginatedCanvasImpl) parentCanvas);
+        final Inventory inventory, final Scene parentScene, final PaginatedCanvas parentCanvas) {
+        return renderCanvas(inventory, parentScene, (PaginatedCanvasImpl) parentCanvas);
     }
 
     private Map<Integer, IdentifiedCanvasElement> renderCanvas(
-        final Inventory inventory,
-        final SceneInventoryHolder sceneInventoryHolder,
-        final Scene parentScene,
-        final PaginatedCanvasImpl parentCanvas) {
+        final Inventory inventory, final Scene parentScene, final PaginatedCanvasImpl parentCanvas) {
         final Map<Position, CanvasElement> mutableBindingsByPosition = new HashMap<>();
 
         final List<List<CanvasElement>> partitionedElements = parentCanvas.partitionedElements();
@@ -63,14 +56,14 @@ final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
         }
 
         return renderCanvasElements(
-            inventory, sceneInventoryHolder, parentScene, parentCanvas, mutableBindingsByPosition);
+            inventory, parentScene, parentCanvas, mutableBindingsByPosition);
     }
 
     static final class InstanceHolder {
 
         static final CanvasRenderer<PaginatedCanvas> RENDERER = new PaginatedCanvasRenderer();
         static final CanvasMapperRenderer MAPPER = (holder, scene, canvas) ->
-            RENDERER.renderCanvas(holder.getInventory(), holder, scene, (PaginatedCanvas) canvas);
+            RENDERER.renderCanvas(holder.getInventory(), scene, (PaginatedCanvas) canvas);
 
         private InstanceHolder() {}
     }

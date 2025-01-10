@@ -9,7 +9,6 @@ import dev.shiza.uify.canvas.renderer.CanvasRenderingException;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
-import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import java.util.HashMap;
 import java.util.Map;
 import org.bukkit.inventory.Inventory;
@@ -20,18 +19,12 @@ final class SequentialCanvasRenderer implements CanvasRenderer<SequentialCanvas>
 
     @Override
     public Map<Integer, IdentifiedCanvasElement> renderCanvas(
-        final Inventory inventory,
-        final SceneInventoryHolder sceneInventoryHolder,
-        final Scene parentScene,
-        final SequentialCanvas parentCanvas) {
-        return renderCanvas(inventory, sceneInventoryHolder, parentScene, (SequentialCanvasImpl) parentCanvas);
+        final Inventory inventory, final Scene parentScene, final SequentialCanvas parentCanvas) {
+        return renderCanvas(inventory, parentScene, (SequentialCanvasImpl) parentCanvas);
     }
 
     private Map<Integer, IdentifiedCanvasElement> renderCanvas(
-        final Inventory inventory,
-        final SceneInventoryHolder sceneInventoryHolder,
-        final Scene parentScene,
-        final SequentialCanvasImpl parentCanvas) {
+        final Inventory inventory, final Scene parentScene, final SequentialCanvasImpl parentCanvas) {
         final int requiredSize = parentCanvas.elements().size();
         final int estimatedSize = estimatedSize((SceneImpl) parentScene, parentCanvas);
         if (requiredSize > estimatedSize) {
@@ -54,7 +47,7 @@ final class SequentialCanvasRenderer implements CanvasRenderer<SequentialCanvas>
             }
         }
 
-        return renderCanvasElements(inventory, sceneInventoryHolder, parentScene, parentCanvas, elementsByPosition);
+        return renderCanvasElements(inventory, parentScene, parentCanvas, elementsByPosition);
     }
 
     private int estimatedSize(final SceneImpl scene, final SequentialCanvasImpl parentCanvas) {
@@ -76,7 +69,7 @@ final class SequentialCanvasRenderer implements CanvasRenderer<SequentialCanvas>
 
         static final CanvasRenderer<SequentialCanvas> RENDERER = new SequentialCanvasRenderer();
         static final CanvasMapperRenderer MAPPER = (holder, scene, canvas) ->
-            RENDERER.renderCanvas(holder.getInventory(), holder, scene, (SequentialCanvas) canvas);
+            RENDERER.renderCanvas(holder.getInventory(), scene, (SequentialCanvas) canvas);
 
         private InstanceHolder() {}
     }

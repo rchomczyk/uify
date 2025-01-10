@@ -10,7 +10,6 @@ import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.renderer.CanvasRenderer;
 import dev.shiza.uify.canvas.renderer.CanvasRenderingException;
 import dev.shiza.uify.position.Position;
-import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 
 final class LayoutCanvasRenderer implements CanvasRenderer<LayoutCanvas> {
 
@@ -22,18 +21,12 @@ final class LayoutCanvasRenderer implements CanvasRenderer<LayoutCanvas> {
 
     @Override
     public Map<Integer, IdentifiedCanvasElement> renderCanvas(
-        final Inventory inventory,
-        final SceneInventoryHolder sceneInventoryHolder,
-        final Scene parentScene,
-        final LayoutCanvas parentCanvas) {
-        return renderCanvas(inventory, parentScene, sceneInventoryHolder, (LayoutCanvasImpl) parentCanvas);
+        final Inventory inventory, final Scene parentScene, final LayoutCanvas parentCanvas) {
+        return renderCanvas(inventory, parentScene, (LayoutCanvasImpl) parentCanvas);
     }
 
     private Map<Integer, IdentifiedCanvasElement> renderCanvas(
-        final Inventory inventory,
-        final Scene parentScene,
-        final SceneInventoryHolder sceneInventoryHolder,
-        final LayoutCanvasImpl parentCanvas) {
+        final Inventory inventory, final Scene parentScene, final LayoutCanvasImpl parentCanvas) {
         final Map<Position, CanvasElement> mutableBindingsByPosition = new HashMap<>(parentCanvas.bindingsByPosition());
 
         final String pattern = parentCanvas.pattern();
@@ -63,14 +56,14 @@ final class LayoutCanvasRenderer implements CanvasRenderer<LayoutCanvas> {
         }
 
         return renderCanvasElements(
-            inventory, sceneInventoryHolder, parentScene, parentCanvas, mutableBindingsByPosition);
+            inventory, parentScene, parentCanvas, mutableBindingsByPosition);
     }
 
     static final class InstanceHolder {
 
         static final CanvasRenderer<LayoutCanvas> RENDERER = new LayoutCanvasRenderer();
         static final CanvasMapperRenderer MAPPER = (holder, scene, canvas) ->
-            RENDERER.renderCanvas(holder.getInventory(), holder, scene, (LayoutCanvas) canvas);
+            RENDERER.renderCanvas(holder.getInventory(), scene, (LayoutCanvas) canvas);
 
         private InstanceHolder() {}
     }

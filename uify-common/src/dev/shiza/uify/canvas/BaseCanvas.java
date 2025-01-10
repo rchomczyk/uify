@@ -1,8 +1,14 @@
 package dev.shiza.uify.canvas;
 
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
+import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -13,6 +19,8 @@ public abstract class BaseCanvas implements Canvas {
 
     private CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour = (state, event) -> {};
     private CanvasPosition canvasPosition = new CanvasPosition();
+    private Map<Integer, IdentifiedCanvasElement> renderedElements = Map.of();
+    private final Set<SceneInventoryHolder> owners = new HashSet<>();
 
     @Override
     public Canvas position(final UnaryOperator<CanvasPosition> mutator) {
@@ -22,6 +30,16 @@ public abstract class BaseCanvas implements Canvas {
 
     public CanvasPosition position() {
         return canvasPosition;
+    }
+
+    @Override
+    public void assign(final SceneInventoryHolder owner) {
+        owners.add(owner);
+    }
+
+    @Override
+    public void update() {
+        owners.forEach(owner -> mapper().renderCanvas(owner, owner.sceneMorph(), this));
     }
 
     @Override
@@ -44,6 +62,14 @@ public abstract class BaseCanvas implements Canvas {
     public Canvas onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour) {
         this.canvasCloseBehaviour = this.canvasCloseBehaviour.andThen(canvasCloseBehaviour);
         return this;
+    }
+
+    public Map<Integer, IdentifiedCanvasElement> renderedElements() {
+        return renderedElements;
+    }
+
+    public void renderedElements(final Map<Integer, IdentifiedCanvasElement> renderedElements) {
+        this.renderedElements = Collections.unmodifiableMap(renderedElements);
     }
 
     public CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour() {

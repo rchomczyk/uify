@@ -172,7 +172,7 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
             element.onElementClick((state, event) -> {
                 final int originalPage = pageCurrent();
                 if (originalPage != forward().pageCurrent()) {
-                    state.element().updateScene();
+                    state.canvas().update();
                 }
             }));
         return this;
@@ -204,7 +204,7 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
             element.onElementClick((state, event) -> {
                 final int originalPage = pageCurrent();
                 if (originalPage != backward().pageCurrent()) {
-                    state.element().updateScene();
+                    state.canvas().update();
                 }
             }));
         return this;
