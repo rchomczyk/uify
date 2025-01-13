@@ -4,6 +4,7 @@ import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import dev.shiza.uify.inventory.InventoryAccessorProvider;
 import dev.shiza.uify.inventory.anvil.AnvilInventory;
 import dev.shiza.uify.inventory.anvil.AnvilInventoryFactory;
+import dev.shiza.uify.scene.renderer.SceneRenderer;
 import dev.shiza.uify.scene.view.AnvilView;
 import dev.shiza.uify.scene.view.ChestView;
 import dev.shiza.uify.scene.view.SceneView;
@@ -32,6 +33,10 @@ public final class SceneInventoryHolder implements InventoryHolder {
 
     public void title(final Component title) {
         InventoryAccessorProvider.inventoryAccessor().title(this, title);
+    }
+
+    public void update() {
+        SceneRenderer.sceneRenderer().renderScene(sceneMorph, this);
     }
 
     public Scene sceneMorph() {
