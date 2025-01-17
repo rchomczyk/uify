@@ -32,6 +32,13 @@ public class CanvasBaseElement implements CanvasElement {
         this.elementClickConsumer = elementClickConsumer;
     }
 
+    public CanvasBaseElement(final CanvasElement element) {
+        this(
+            ((CanvasBaseElement) element).itemStack,
+            ((CanvasBaseElement) element).elementDragConsumer,
+            ((CanvasBaseElement) element).elementClickConsumer);
+    }
+
     @Override
     public ItemStack renderElement(final Scene parentScene, final Canvas parentCanvas) {
         return itemStack.get();
