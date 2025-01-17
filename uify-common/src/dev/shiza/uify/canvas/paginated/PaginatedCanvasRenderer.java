@@ -25,6 +25,11 @@ final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
 
     private Map<Integer, IdentifiedCanvasElement> renderCanvas(
         final Inventory inventory, final Scene parentScene, final PaginatedCanvasImpl parentCanvas) {
+        final int lastPartition = parentCanvas.partitionedElements().size() - 1;
+        if (parentCanvas.currentPage() > lastPartition) {
+            parentCanvas.page(lastPartition);
+        }
+
         final Map<Position, CanvasElement> mutableBindingsByPosition = new HashMap<>();
 
         final List<List<CanvasElement>> partitionedElements = parentCanvas.partitionedElements();
