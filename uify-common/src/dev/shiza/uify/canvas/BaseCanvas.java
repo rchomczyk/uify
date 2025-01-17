@@ -5,6 +5,7 @@ import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Optional;
@@ -39,7 +40,21 @@ public abstract class BaseCanvas implements Canvas {
 
     @Override
     public void update() {
-        owners.forEach(owner -> mapper().renderCanvas(owner, owner.sceneMorph(), this));
+        owners.forEach(this::update);
+    }
+
+    private void update(final SceneInventoryHolder owner) {
+        final Map<Integer, IdentifiedCanvasElement> mutableSceneElementsBySlot =
+            new HashMap<>(owner.renderedElements());
+        renderedElements().forEach((slot, element) -> mutableSceneElementsBySlot.remove(slot));
+
+        final Map<Integer, IdentifiedCanvasElement> renderedCanvasElements =
+            mapper().renderCanvas(owner, owner.sceneMorph(), this);
+        mutableSceneElementsBySlot.putAll(renderedCanvasElements);
+
+        renderedElements(renderedCanvasElements);
+
+        owner.renderedElements(mutableSceneElementsBySlot);
     }
 
     @Override

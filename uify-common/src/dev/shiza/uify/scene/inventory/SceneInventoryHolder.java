@@ -1,10 +1,10 @@
 package dev.shiza.uify.scene.inventory;
 
+import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import dev.shiza.uify.inventory.InventoryAccessorProvider;
 import dev.shiza.uify.inventory.anvil.AnvilInventory;
 import dev.shiza.uify.inventory.anvil.AnvilInventoryFactory;
-import dev.shiza.uify.scene.renderer.SceneRenderer;
 import dev.shiza.uify.scene.view.AnvilView;
 import dev.shiza.uify.scene.view.ChestView;
 import dev.shiza.uify.scene.view.SceneView;
@@ -36,7 +36,7 @@ public final class SceneInventoryHolder implements InventoryHolder {
     }
 
     public void update() {
-        SceneRenderer.sceneRenderer().renderScene(sceneMorph, this);
+        ((SceneImpl) sceneMorph).canvases().forEach(Canvas::update);
     }
 
     public Scene sceneMorph() {
