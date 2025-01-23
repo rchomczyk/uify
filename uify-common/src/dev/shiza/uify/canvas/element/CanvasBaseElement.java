@@ -1,6 +1,8 @@
 package dev.shiza.uify.canvas.element;
 
 import dev.shiza.uify.canvas.element.behaviour.CanvasElementGenericBehaviour;
+import dev.shiza.uify.canvas.element.behaviour.cooldown.CooldownGenericBehaviour;
+import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.function.Supplier;
@@ -13,10 +15,13 @@ import dev.shiza.uify.canvas.Canvas;
 public class CanvasBaseElement implements CanvasElement {
 
     private Supplier<ItemStack> itemStack;
-    private CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragConsumer =
+    private CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragBehaviour =
         (state, event) -> {};
-    private CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickConsumer =
+    private CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour =
         (state, event) -> {};
+    private CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour =
+        (state, event) -> {};
+    private Duration cooldown = Duration.ZERO;
     private final Set<Canvas> owners = new HashSet<>();
 
     public CanvasBaseElement(final Supplier<ItemStack> itemStack) {
@@ -25,18 +30,21 @@ public class CanvasBaseElement implements CanvasElement {
 
     public CanvasBaseElement(
         final Supplier<ItemStack> itemStack,
-        final CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragConsumer,
-        final CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickConsumer) {
+        final CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragBehaviour,
+        final CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour,
+        final CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour) {
         this.itemStack = itemStack;
-        this.elementDragConsumer = elementDragConsumer;
-        this.elementClickConsumer = elementClickConsumer;
+        this.elementDragBehaviour = elementDragBehaviour;
+        this.elementClickBehaviour = elementClickBehaviour;
+        this.elementCooldownBehaviour = elementCooldownBehaviour;
     }
 
     public CanvasBaseElement(final CanvasElement element) {
         this(
             ((CanvasBaseElement) element).itemStack,
-            ((CanvasBaseElement) element).elementDragConsumer,
-            ((CanvasBaseElement) element).elementClickConsumer);
+            ((CanvasBaseElement) element).elementDragBehaviour,
+            ((CanvasBaseElement) element).elementClickBehaviour,
+            ((CanvasBaseElement) element).elementCooldownBehaviour);
     }
 
     @Override
@@ -46,13 +54,19 @@ public class CanvasBaseElement implements CanvasElement {
 
     @Override
     public CanvasElement onElementDrag(final CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragBehaviour) {
-        this.elementDragConsumer = this.elementDragConsumer.andThen(elementDragBehaviour);
+        this.elementDragBehaviour = this.elementDragBehaviour.andThen(elementDragBehaviour);
         return this;
     }
 
     @Override
     public CanvasElement onElementClick(final CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour) {
-        this.elementClickConsumer = this.elementClickConsumer.andThen(elementClickBehaviour);
+        this.elementClickBehaviour = this.elementClickBehaviour.andThen(elementClickBehaviour);
+        return this;
+    }
+
+    @Override
+    public CanvasElement onElementCooldown(final CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour) {
+        this.elementCooldownBehaviour = this.elementCooldownBehaviour.andThen(elementCooldownBehaviour);
         return this;
     }
 
@@ -67,16 +81,30 @@ public class CanvasBaseElement implements CanvasElement {
     }
 
     @Override
+    public CanvasElement cooldown(final Duration period) {
+        this.cooldown = period;
+        return this;
+    }
+
+    @Override
     public void transform(final Supplier<ItemStack> itemStack) {
         this.itemStack = itemStack;
         this.update();
     }
 
+    public Duration cooldown() {
+        return cooldown;
+    }
+
     public CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragConsumer() {
-        return elementDragConsumer;
+        return elementDragBehaviour;
     }
 
     public CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickConsumer() {
-        return elementClickConsumer;
+        return elementClickBehaviour;
+    }
+
+    public CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour() {
+        return elementCooldownBehaviour;
     }
 }

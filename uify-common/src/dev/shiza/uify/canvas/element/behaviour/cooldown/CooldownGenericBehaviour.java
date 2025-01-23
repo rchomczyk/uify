@@ -1,14 +1,14 @@
-package dev.shiza.uify.canvas.element.behaviour;
+package dev.shiza.uify.canvas.element.behaviour.cooldown;
 
 import dev.shiza.uify.canvas.Canvas;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 
 @FunctionalInterface
-public interface CanvasElementGenericBehaviour<T extends Canvas, E extends InventoryInteractEvent> {
+public interface CooldownGenericBehaviour<T extends Canvas, E extends InventoryInteractEvent> {
 
-    void accept(final CanvasElementGenericBehaviourState<T> state, final E event);
+    void accept(final CooldownGenericBehaviourState<T> state, final E event);
 
-    default CanvasElementGenericBehaviour<T, E> andThen(final CanvasElementGenericBehaviour<T, E> after) {
+    default CooldownGenericBehaviour<T, E> andThen(final CooldownGenericBehaviour<T, E> after) {
         if (after == null) {
             throw new NullPointerException("The 'after' CanvasElementBehaviour cannot be null");
         }

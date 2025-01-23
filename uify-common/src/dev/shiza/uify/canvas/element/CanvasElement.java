@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.element;
 
+import java.time.Duration;
 import java.util.function.Supplier;
 import org.bukkit.inventory.ItemStack;
 import dev.shiza.uify.scene.Scene;
@@ -14,6 +15,8 @@ public interface CanvasElement extends CanvasElementBehaviours {
     void assign(final Canvas canvas);
 
     void update();
+
+    CanvasElement cooldown(final Duration period);
 
     void transform(final Supplier<ItemStack> itemStack);
 }
