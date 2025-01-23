@@ -1,9 +1,9 @@
 package dev.shiza.uify.canvas.element;
 
 import dev.shiza.uify.canvas.element.behaviour.CanvasElementGenericBehaviourState;
-import dev.shiza.uify.canvas.element.behaviour.cooldown.CooldownFacade;
-import dev.shiza.uify.canvas.element.behaviour.cooldown.CooldownFacadeFactory;
-import dev.shiza.uify.canvas.element.behaviour.cooldown.CooldownGenericBehaviourState;
+import dev.shiza.uify.canvas.element.cooldown.CooldownFacade;
+import dev.shiza.uify.canvas.element.cooldown.CooldownFacadeFactory;
+import dev.shiza.uify.canvas.element.cooldown.CooldownGenericBehaviourState;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.EventHandler;

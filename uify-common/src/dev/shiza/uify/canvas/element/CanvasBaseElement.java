@@ -1,7 +1,7 @@
 package dev.shiza.uify.canvas.element;
 
 import dev.shiza.uify.canvas.element.behaviour.CanvasElementGenericBehaviour;
-import dev.shiza.uify.canvas.element.behaviour.cooldown.CooldownGenericBehaviour;
+import dev.shiza.uify.canvas.element.cooldown.CooldownGenericBehaviour;
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;

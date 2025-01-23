@@ -1,4 +1,4 @@
-package dev.shiza.uify.canvas.element.behaviour.cooldown;
+package dev.shiza.uify.canvas.element.cooldown;
 
 import net.jodah.expiringmap.ExpiringMap;
 
