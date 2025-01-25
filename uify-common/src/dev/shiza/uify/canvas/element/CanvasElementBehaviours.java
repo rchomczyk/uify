@@ -16,4 +16,7 @@ public interface CanvasElementBehaviours {
 
     CanvasElement onElementCooldown(
         final CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour);
+
+    CanvasElement onElementCooldownExpiration(
+        final CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownExpirationBehaviour);
 }

@@ -15,7 +15,10 @@ import org.bukkit.inventory.ItemStack;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.canvas.Canvas;
 import org.bukkit.plugin.Plugin;
+import org.jetbrains.annotations.ApiStatus;
+import org.jspecify.annotations.Nullable;
 
+@ApiStatus.Internal
 public class CanvasBaseElement implements CanvasElement {
 
     private Supplier<ItemStack> itemStack;
@@ -24,6 +27,8 @@ public class CanvasBaseElement implements CanvasElement {
     private CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour =
         (state, event) -> {};
     private CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour =
+        (state, event) -> {};
+    private CooldownGenericBehaviour<Canvas, @Nullable InventoryClickEvent> elementCooldownExpirationBehaviour =
         (state, event) -> {};
     private Duration cooldown = Duration.ZERO;
     private final Set<Canvas> owners = new HashSet<>();
@@ -37,11 +42,13 @@ public class CanvasBaseElement implements CanvasElement {
         final Supplier<ItemStack> itemStack,
         final CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragBehaviour,
         final CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour,
-        final CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour) {
+        final CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour,
+        final CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownExpirationBehaviour) {
         this.itemStack = itemStack;
         this.elementDragBehaviour = elementDragBehaviour;
         this.elementClickBehaviour = elementClickBehaviour;
         this.elementCooldownBehaviour = elementCooldownBehaviour;
+        this.elementCooldownExpirationBehaviour = elementCooldownExpirationBehaviour;
     }
 
     public CanvasBaseElement(final CanvasElement element) {
@@ -49,7 +56,8 @@ public class CanvasBaseElement implements CanvasElement {
             ((CanvasBaseElement) element).itemStack,
             ((CanvasBaseElement) element).elementDragBehaviour,
             ((CanvasBaseElement) element).elementClickBehaviour,
-            ((CanvasBaseElement) element).elementCooldownBehaviour);
+            ((CanvasBaseElement) element).elementCooldownBehaviour,
+            ((CanvasBaseElement) element).elementCooldownExpirationBehaviour);
     }
 
     @Override
@@ -78,6 +86,14 @@ public class CanvasBaseElement implements CanvasElement {
     @Override
     public CanvasElement onElementCooldown(final CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour) {
         this.elementCooldownBehaviour = this.elementCooldownBehaviour.andThen(elementCooldownBehaviour);
+        return this;
+    }
+
+    @Override
+    public CanvasElement onElementCooldownExpiration(
+        final CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownExpirationBehaviour) {
+        this.elementCooldownExpirationBehaviour =
+            this.elementCooldownExpirationBehaviour.andThen(elementCooldownExpirationBehaviour);
         return this;
     }
 
@@ -123,6 +139,10 @@ public class CanvasBaseElement implements CanvasElement {
                 }, delayInTicks);
     }
 
+    public Set<Canvas> owners() {
+        return owners;
+    }
+
     public Duration cooldown() {
         return cooldown;
     }
@@ -137,5 +157,9 @@ public class CanvasBaseElement implements CanvasElement {
 
     public CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour() {
         return elementCooldownBehaviour;
+    }
+
+    public CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownExpirationBehaviour() {
+        return elementCooldownExpirationBehaviour;
     }
 }

@@ -79,7 +79,7 @@ public final class ItemStackBuilder {
         return itemStack;
     }
 
-    public CanvasElement buildElement() {
+    public CanvasElement buildAsElement() {
         return new ImmutableCanvasElement(this::build);
     }
 }

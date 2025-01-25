@@ -79,6 +79,10 @@ public abstract class BaseCanvas implements Canvas {
         return this;
     }
 
+    public Set<SceneInventoryHolder> owners() {
+        return owners;
+    }
+
     public Map<Integer, IdentifiedCanvasElement> renderedElements() {
         return renderedElements;
     }

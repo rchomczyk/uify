@@ -11,7 +11,8 @@ public class ImmutableCanvasElement extends CanvasBaseElement {
             itemStack,
             (state, event) -> event.setCancelled(true),
             (state, event) -> event.setCancelled(true),
-            (state, event) -> event.setCancelled(true));
+            (state, event) -> event.setCancelled(true),
+            (state, event) -> {});
     }
 
     public ImmutableCanvasElement(final Material material) {

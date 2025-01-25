@@ -9,6 +9,7 @@ public final class CooldownFacadeFactory {
     public static CooldownFacade cooldownFacade() {
         return new CooldownService(
             ExpiringMap.builder()
+                .expirationListener(new CooldownExpirationListener())
                 .variableExpiration()
                 .build());
     }
