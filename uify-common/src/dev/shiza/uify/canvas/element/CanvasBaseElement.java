@@ -16,9 +16,7 @@ import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.canvas.Canvas;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
-import org.jspecify.annotations.Nullable;
 
-@ApiStatus.Internal
 public class CanvasBaseElement implements CanvasElement {
 
     private Supplier<ItemStack> itemStack;
@@ -28,7 +26,7 @@ public class CanvasBaseElement implements CanvasElement {
         (state, event) -> {};
     private CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour =
         (state, event) -> {};
-    private CooldownGenericBehaviour<Canvas, @Nullable InventoryClickEvent> elementCooldownExpirationBehaviour =
+    private CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownExpirationBehaviour =
         (state, event) -> {};
     private Duration cooldown = Duration.ZERO;
     private final Set<Canvas> owners = new HashSet<>();
@@ -139,26 +137,37 @@ public class CanvasBaseElement implements CanvasElement {
                 }, delayInTicks);
     }
 
+    @ApiStatus.Internal
+    public Supplier<ItemStack> itemStack() {
+        return itemStack;
+    }
+
+    @ApiStatus.Internal
     public Set<Canvas> owners() {
         return owners;
     }
 
+    @ApiStatus.Internal
     public Duration cooldown() {
         return cooldown;
     }
 
+    @ApiStatus.Internal
     public CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragConsumer() {
         return elementDragBehaviour;
     }
 
+    @ApiStatus.Internal
     public CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickConsumer() {
         return elementClickBehaviour;
     }
 
+    @ApiStatus.Internal
     public CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour() {
         return elementCooldownBehaviour;
     }
 
+    @ApiStatus.Internal
     public CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownExpirationBehaviour() {
         return elementCooldownExpirationBehaviour;
     }
