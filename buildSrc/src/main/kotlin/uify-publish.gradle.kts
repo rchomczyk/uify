@@ -9,7 +9,7 @@ version = "1.6.3-SNAPSHOT"
 publishing {
     repositories {
         mavenLocal()
-        maven("aurora-repo", "https://repo.shiza.dev/aurora", "auroraUsername", "auroraPassword")
+        maven("aurora-repo", "https://maven.blockgate.finance/auroramc", "auroraUsername", "auroraPassword")
     }
 }
 
