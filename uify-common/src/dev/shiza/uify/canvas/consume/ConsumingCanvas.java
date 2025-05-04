@@ -36,5 +36,7 @@ public interface ConsumingCanvas extends Canvas {
     @Override
     ConsumingCanvas onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour);
 
+    ConsumingCanvas onConsumption(final ConsumingCanvasConsumptionBehaviour<InventoryCloseEvent> canvasConsumeBehaviour);
+
     List<ItemStack> consume(final SceneInventoryHolder holder);
 }

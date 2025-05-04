@@ -4,6 +4,7 @@ import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.CanvasMapperRenderer;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
+import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviourState;
 import dev.shiza.uify.canvas.element.CanvasBaseElement;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
@@ -66,6 +67,16 @@ final class ConsumingCanvasImpl extends BaseCanvas implements ConsumingCanvas {
     @Override
     public ConsumingCanvas onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour) {
         super.onCanvasClose(canvasCloseBehaviour);
+        return this;
+    }
+
+    @Override
+    public ConsumingCanvas onConsumption(final ConsumingCanvasConsumptionBehaviour<InventoryCloseEvent> canvasConsumeBehaviour) {
+        super.onCanvasClose((state, event) -> {
+            final CanvasGenericBehaviourState<ConsumingCanvas> typedState =
+                ConsumingCanvasConsumptionBehaviour.typedCopy(state);
+            canvasConsumeBehaviour.accept(typedState, event, typedState.canvas().consume(state.holder()));
+        });
         return this;
     }
 
