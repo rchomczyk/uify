@@ -1,6 +1,6 @@
 package dev.shiza.uify.inventory;
 
-import io.papermc.paper.adventure.AdventureComponent;
+import io.papermc.paper.adventure.PaperAdventure;
 import net.kyori.adventure.text.Component;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -35,6 +35,6 @@ final class InventoryAccessorV1_21_4 implements InventoryAccessor {
             new ClientboundOpenScreenPacket(
                 serverPlayer.containerMenu.containerId,
                 serverPlayer.containerMenu.getType(),
-                new AdventureComponent(title)));
+                PaperAdventure.asVanilla(title)));
     }
 }
