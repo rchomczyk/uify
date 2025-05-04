@@ -1,0 +1,8 @@
+main: dev.shiza.uify.demo.DemoBukkitPlugin
+name: uify-demo
+version: 1.0.0-SNAPSHOT
+authors: [shiza]
+api-version: "1.21.4"
+commands:
+  uify:
+    permission: uify.demo
