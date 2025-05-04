@@ -63,6 +63,7 @@ final class ConsumingCanvasRenderer implements CanvasRenderer<ConsumingCanvas> {
             }
         }
 
+        mutableBindingsByPosition.putAll(parentCanvas.elementsByPosition());
         return renderCanvasElements(
             inventory, parentScene, parentCanvas, mutableBindingsByPosition);
     }

@@ -5,5 +5,4 @@ import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 
 public record CanvasGenericBehaviourState<T extends Canvas>(SceneInventoryHolder holder, Scene scene, T canvas) {
-
 }

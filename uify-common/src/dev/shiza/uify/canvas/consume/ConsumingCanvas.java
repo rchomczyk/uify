@@ -4,10 +4,12 @@ import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.function.UnaryOperator;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
@@ -15,20 +17,36 @@ import org.bukkit.inventory.ItemStack;
 public interface ConsumingCanvas extends Canvas {
 
     static ConsumingCanvas rows(final int rows) {
-        return new ConsumingCanvasImpl(new ArrayList<>())
+        return new ConsumingCanvasImpl(new ArrayList<>(), new HashMap<>())
             .position(
                 position -> position
                     .minimum(0, 0)
                     .maximum(rows - 1, 8));
     }
 
-    ConsumingCanvas populateItems(final Collection<ItemStack> items);
+    default ConsumingCanvas populateItems(final Collection<ItemStack> items) {
+        return populateItems(items, false);
+    }
+
+    default ConsumingCanvas populateItems(final Map<Position, ? extends ItemStack> elements) {
+        return populateItems(elements, false);
+    }
+
+    default ConsumingCanvas populate(final Collection<? extends CanvasElement> elements) {
+        return populate(elements, false);
+    }
+
+    default ConsumingCanvas populate(final Map<Position, ? extends CanvasElement> elements) {
+        return populate(elements, false);
+    }
 
     ConsumingCanvas populateItems(final Collection<ItemStack> items, final boolean override);
 
-    ConsumingCanvas populate(final Collection<? extends CanvasElement> elements);
+    ConsumingCanvas populateItems(final Map<Position, ? extends ItemStack> elements, final boolean override);
 
     ConsumingCanvas populate(final Collection<? extends CanvasElement> elements, final boolean override);
+
+    ConsumingCanvas populate(final Map<Position, ? extends CanvasElement> elements, final boolean override);
 
     @Override
     ConsumingCanvas position(final UnaryOperator<CanvasPosition> mutator);
@@ -36,7 +54,11 @@ public interface ConsumingCanvas extends Canvas {
     @Override
     ConsumingCanvas onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour);
 
-    ConsumingCanvas onConsumption(final ConsumingCanvasConsumptionBehaviour<InventoryCloseEvent> canvasConsumeBehaviour);
+    ConsumingCanvas onConsumption(final ConsumptionBehaviour<ConsumptionResult> consumptionBehaviour);
 
-    List<ItemStack> consume(final SceneInventoryHolder holder);
+    ConsumingCanvas onIndexedConsumption(final ConsumptionBehaviour<IndexedConsumptionResult> consumptionBehaviour);
+
+    ConsumptionResult consume(final SceneInventoryHolder holder);
+
+    IndexedConsumptionResult consumeWithIndexes(final SceneInventoryHolder holder);
 }

@@ -1,6 +1,7 @@
 package dev.shiza.uify.demo;
 
 import dev.shiza.uify.canvas.consume.ConsumingCanvas;
+import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.SceneComposer;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import dev.shiza.uify.scene.view.ChestView;
@@ -84,22 +85,33 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
     }
 
     private Consumer<Player> kitEditor() {
-        final List<ItemStack> initialContent = List.of(
-            new ItemStack(Material.DIAMOND),
-            new ItemStack(Material.DIAMOND_SWORD));
-        return viewer -> SceneComposer.compose(ChestView.ofRows(1))
+        return viewer -> SceneComposer.compose(ChestView.ofRows(4))
             .title(MiniMessage.miniMessage().deserialize("<gray>Kit editor"))
             .viewer(viewer)
-            .canvas(ConsumingCanvas.rows(1)
-                .populateItems(initialContent)
-                .onConsumption(((state, event, consumed) -> {
-                    final String consumedTypes = consumed.stream()
+            .canvas(ConsumingCanvas.rows(2)
+                .position(position -> position.minimum(1, 1).maximum(2, 7))
+                .populateItems(Map.of(
+                    new Position(0, 1), new ItemStack(Material.DIAMOND),
+                    new Position(1, 5), new ItemStack(Material.DIAMOND_SWORD)))
+                .onConsumption(((state, event, result) -> {
+                    final String consumedTypes = result.items().stream()
                         .map(ItemStack::getType)
                         .map(Material::name)
                         .distinct()
                         .collect(Collectors.joining(","));
-                    viewer.sendMessage("Consumed %d items, of types: %s".formatted(consumed.size(), consumedTypes));
-                })))
+                    final int consumedCount = result.items().size();
+                    viewer.sendMessage("Consumed %d items, of types: %s".formatted(consumedCount, consumedTypes));
+                }))
+                .onIndexedConsumption((state, event, result) -> {
+                    final String consumedTypes = result.items().entrySet().stream()
+                        .map(itemByRawSlot ->
+                            "row: " + itemByRawSlot.getKey().row() + ", " +
+                            "col: " + itemByRawSlot.getKey().column() + ", " +
+                            "type: " + itemByRawSlot.getValue().getType().name())
+                        .collect(Collectors.joining("\n"));
+                    final int consumedCount = result.items().size();
+                    viewer.sendMessage("Consumed %d items:%n%s".formatted(consumedCount, consumedTypes));
+                }))
             .dispatch();
     }
 
