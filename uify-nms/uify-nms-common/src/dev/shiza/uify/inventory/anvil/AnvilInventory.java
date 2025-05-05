@@ -4,7 +4,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 
-public interface AnvilInventory extends AnvilInventoryBehaviours {
+public interface AnvilInventory {
 
     void open();
 
