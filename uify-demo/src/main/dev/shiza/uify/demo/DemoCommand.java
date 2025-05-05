@@ -20,6 +20,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
@@ -97,11 +98,20 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
     }
 
     private Consumer<Player> border() {
-        return viewer -> SceneComposer.compose(ChestView.ofRows(5))
+        return viewer -> SceneComposer.compose(ChestView.ofRows(6))
             .title(Component.text("Border"))
             .viewer(viewer)
-            .canvas(LayoutCanvas.border(3, 7, ItemStackBuilder.of(Material.BLACK_STAINED_GLASS_PANE).buildAsElement())
+            .canvas(LayoutCanvas.border(4, 7, ItemStackBuilder.of(Material.BLACK_STAINED_GLASS_PANE).buildAsElement())
                 .position(position -> position.minimum(1, 1).maximum(4, 7)))
+            .canvas(SequentialCanvas.rows(3)
+                .position(position -> position.minimum(2, 2).maximum(3, 6))
+                .elements(Arrays.stream(Material.values())
+                    .filter(Predicate.not(Material::isAir))
+                    .filter(Material::isItem)
+                    .map(ItemStackBuilder::of)
+                    .map(ItemStackBuilder::buildAsElement)
+                    .limit(10)
+                    .toList()))
             .dispatch();
     }
 
@@ -117,6 +127,7 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
                     0, 2,
                     ItemStackBuilder.of(Material.ARROW).displayName(Component.text("Backward")).buildAsElement())
                 .populate(Arrays.stream(Material.values())
+                    .filter(Predicate.not(Material::isAir))
                     .filter(Material::isItem)
                     .map(ItemStackBuilder::of)
                     .map(ItemStackBuilder::buildAsElement)
