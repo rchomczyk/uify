@@ -49,7 +49,7 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
 
         paginatedCanvas.predefinedBindings = positionsFromPattern(rows);
         for (final Position position : paginatedCanvas.predefinedBindings.contentPositions()) {
-            paginatedCanvas.compose(__ -> CanvasPosition.pos(position));
+            paginatedCanvas.compose(ignored -> CanvasPosition.pos(position));
         }
 
         if (rows.length == 0) {

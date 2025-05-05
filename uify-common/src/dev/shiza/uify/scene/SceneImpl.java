@@ -1,7 +1,11 @@
 package dev.shiza.uify.scene;
 
+import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.scene.behaviour.SceneGenericBehaviour;
+import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
+import dev.shiza.uify.scene.renderer.SceneRenderer;
 import dev.shiza.uify.scene.view.AnvilView;
+import dev.shiza.uify.scene.view.SceneView;
 import java.util.ArrayList;
 import java.util.List;
 import net.kyori.adventure.text.Component;
@@ -9,10 +13,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.jetbrains.annotations.ApiStatus;
-import dev.shiza.uify.canvas.Canvas;
-import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
-import dev.shiza.uify.scene.renderer.SceneRenderer;
-import dev.shiza.uify.scene.view.SceneView;
 
 @ApiStatus.Internal
 public record SceneImpl(SceneView view,
@@ -77,7 +77,7 @@ public record SceneImpl(SceneView view,
     public void dispatch() {
         final SceneInventoryHolder sceneInventoryHolder = SceneRenderer.sceneRenderer().renderScene(this);
         final SceneImpl scene = (SceneImpl) sceneInventoryHolder.sceneMorph();
-        if (scene.view() instanceof AnvilView && sceneInventoryHolder.anvilInventory() != null) {
+        if (scene.view() instanceof AnvilView) {
             sceneInventoryHolder.anvilInventory().open();
             return;
         }

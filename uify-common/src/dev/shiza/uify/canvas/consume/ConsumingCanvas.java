@@ -14,7 +14,7 @@ import java.util.function.UnaryOperator;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
-public interface ConsumingCanvas extends Canvas {
+public interface ConsumingCanvas extends Canvas, ConsumingCanvasBehaviours {
 
     static ConsumingCanvas rows(final int rows) {
         return new ConsumingCanvasImpl(new ArrayList<>(), new HashMap<>())
@@ -53,10 +53,6 @@ public interface ConsumingCanvas extends Canvas {
 
     @Override
     ConsumingCanvas onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour);
-
-    ConsumingCanvas onConsumption(final ConsumptionBehaviour<ConsumptionResult> consumptionBehaviour);
-
-    ConsumingCanvas onIndexedConsumption(final ConsumptionBehaviour<IndexedConsumptionResult> consumptionBehaviour);
 
     ConsumptionResult consume(final SceneInventoryHolder holder);
 

@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.layout;
 
+import dev.shiza.uify.canvas.CanvasTypingException;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.HashMap;
@@ -16,6 +17,29 @@ public interface LayoutCanvas extends Canvas {
 
     static LayoutCanvas pattern(final String... patterns) {
         return new LayoutCanvasImpl(String.join("\n", patterns), new HashMap<>(), new HashMap<>());
+    }
+
+    static LayoutCanvas border(final char source, final int rows, final int columns, final CanvasElement element) {
+        if (rows < 3 || columns < 3) {
+            throw new CanvasTypingException(
+                "Layout canvas requires at least three rows and three columns to be able to create border.");
+        }
+
+        final StringBuilder patternBuilder = new StringBuilder();
+        for (int row = 0; row < rows; row++) {
+            final boolean isTopBorder = row == 0;
+            final boolean isBottomBorder = row == rows - 1;
+            if (isTopBorder || isBottomBorder) {
+                patternBuilder.append(String.valueOf(source).repeat(columns));
+                patternBuilder.append("\n");
+            }
+        }
+
+        return pattern(patternBuilder.toString()).bind(source, element);
+    }
+
+    static LayoutCanvas border(final int rows, final int columns, final CanvasElement element) {
+        return border('x', rows, columns, element);
     }
 
     LayoutCanvas bind(final int row, final int column, final CanvasElement element);

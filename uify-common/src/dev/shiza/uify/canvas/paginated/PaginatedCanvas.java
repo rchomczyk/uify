@@ -31,6 +31,10 @@ public interface PaginatedCanvas extends Canvas {
         return PaginatedCanvasImpl.ofPattern(patterns);
     }
 
+    default PaginatedCanvas populate(final Collection<? extends CanvasElement> elements) {
+        return populate(elements, false);
+    }
+
     PaginatedCanvas page(final int page);
 
     PaginatedCanvas forward();
@@ -44,8 +48,6 @@ public interface PaginatedCanvas extends Canvas {
     PaginatedCanvas backward(final CanvasElement element);
 
     PaginatedCanvas backward(final int row, final int column, final CanvasElement element);
-
-    PaginatedCanvas populate(final Collection<? extends CanvasElement> elements);
 
     PaginatedCanvas populate(final Collection<? extends CanvasElement> elements, final boolean override);
 

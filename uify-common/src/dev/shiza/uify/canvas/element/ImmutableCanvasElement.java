@@ -1,7 +1,6 @@
 package dev.shiza.uify.canvas.element;
 
 import java.util.function.Supplier;
-import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 public class ImmutableCanvasElement extends CanvasBaseElement {
@@ -13,9 +12,5 @@ public class ImmutableCanvasElement extends CanvasBaseElement {
             (state, event) -> event.setCancelled(true),
             (state, event) -> event.setCancelled(true),
             (state, event) -> {});
-    }
-
-    public ImmutableCanvasElement(final Material material) {
-        this(() -> new ItemStack(material));
     }
 }

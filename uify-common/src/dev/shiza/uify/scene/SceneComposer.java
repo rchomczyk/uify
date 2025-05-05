@@ -1,5 +1,6 @@
 package dev.shiza.uify.scene;
 
+import dev.shiza.uify.scene.behaviour.SceneGenericBehaviour;
 import dev.shiza.uify.scene.view.ChestView;
 import dev.shiza.uify.scene.view.SceneView;
 import java.util.Collections;
@@ -15,8 +16,8 @@ public final class SceneComposer {
             Component.empty(),
             Collections.emptyList(),
             Collections.emptyList(),
-            (holder, viewer) -> {},
-            (holder, viewer) -> {});
+            SceneGenericBehaviour.undefined(),
+            SceneGenericBehaviour.undefined());
     }
 
     public static Scene compose(final SceneView sceneView) {

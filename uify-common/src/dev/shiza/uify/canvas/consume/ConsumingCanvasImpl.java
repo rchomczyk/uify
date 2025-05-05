@@ -3,6 +3,7 @@ package dev.shiza.uify.canvas.consume;
 import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.CanvasMapperRenderer;
+import dev.shiza.uify.canvas.CanvasComposingException;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviourState;
 import dev.shiza.uify.canvas.element.CanvasBaseElement;
@@ -58,7 +59,7 @@ final class ConsumingCanvasImpl extends BaseCanvas implements ConsumingCanvas {
     @Override
     public ConsumingCanvas populate(final Collection<? extends CanvasElement> elements, final boolean override) {
         if (!mutableElementsByPosition.isEmpty()) {
-            throw new ConsumingCanvasComposingException(
+            throw new CanvasComposingException(
                 "Consuming canvas does not support mixing unordered and indexed population.");
         }
 
@@ -73,7 +74,7 @@ final class ConsumingCanvasImpl extends BaseCanvas implements ConsumingCanvas {
     @Override
     public ConsumingCanvas populate(final Map<Position, ? extends CanvasElement> elements, final boolean override) {
         if (!mutableElements.isEmpty()) {
-            throw new ConsumingCanvasComposingException(
+            throw new CanvasComposingException(
                 "Consuming canvas does not support mixing unordered and indexed population.");
         }
 

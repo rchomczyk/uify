@@ -24,8 +24,6 @@ public final class AnvilInventoryFactory {
         final ServerVersion serverVersion = ServerVersionProvider.getServerVersion();
         if (serverVersion.equals(ServerVersion.V1_21_4)) {
             return new AnvilInventoryProducerV1_21_4();
-        } else if (serverVersion.equals(ServerVersion.V1_20_4)) {
-            return new AnvilInventoryProducerV1_20_4();
         } else {
             throw new UnsupportedServerVersionException(
                 "Could not find anvil inventory implementation for current version.");

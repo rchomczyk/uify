@@ -1,15 +1,19 @@
 package dev.shiza.uify.canvas.layout;
 
 import dev.shiza.uify.canvas.Canvas;
+import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.element.CanvasBaseElement;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.element.ImmutableCanvasElement;
 import dev.shiza.uify.canvas.element.behaviour.CanvasElementGenericBehaviour;
+import dev.shiza.uify.canvas.position.CanvasPosition;
 import dev.shiza.uify.position.Position;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Function;
 import java.util.function.UnaryOperator;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
 final class SelectingCanvasImpl<N extends Number> extends LayoutCanvasImpl implements SelectingCanvas<N> {
@@ -17,6 +21,7 @@ final class SelectingCanvasImpl<N extends Number> extends LayoutCanvasImpl imple
     private final AtomicReference<N> amountReference;
     private final AtomicReference<N> minimumReference;
     private final AtomicReference<N> maximumReference;
+    private final AtomicReference<SelectingCanvasDisplay<N>> displayReference;
 
     SelectingCanvasImpl(
         final String pattern,
@@ -26,6 +31,7 @@ final class SelectingCanvasImpl<N extends Number> extends LayoutCanvasImpl imple
         this.amountReference = new AtomicReference<>();
         this.minimumReference = new AtomicReference<>();
         this.maximumReference = new AtomicReference<>();
+        this.displayReference = new AtomicReference<>();
     }
 
     @Override
@@ -56,7 +62,7 @@ final class SelectingCanvasImpl<N extends Number> extends LayoutCanvasImpl imple
                 clampedValue = Math.max(clampedValue, minimum.doubleValue());
             }
 
-            amountReference.set(SelectingCanvasUtils.convertToNumberType(clampedValue, amount));
+            amount(SelectingCanvasUtils.convertToNumberType(clampedValue, amount));
         };
 
         final CanvasBaseElement oldCanvasBaseElement = (CanvasBaseElement) element;
@@ -72,8 +78,15 @@ final class SelectingCanvasImpl<N extends Number> extends LayoutCanvasImpl imple
     }
 
     @Override
+    public SelectingCanvas<N> display(final char source, final Function<N, CanvasElement> renderer) {
+        displayReference.set(new SelectingCanvasDisplay<>(source, renderer));
+        return this;
+    }
+
+    @Override
     public SelectingCanvas<N> amount(final N amount) {
         amountReference.set(amount);
+        updateDisplay(amount);
         return this;
     }
 
@@ -90,7 +103,29 @@ final class SelectingCanvasImpl<N extends Number> extends LayoutCanvasImpl imple
     }
 
     @Override
+    public SelectingCanvas<N> position(final UnaryOperator<CanvasPosition> mutator) {
+        super.position(mutator);
+        return this;
+    }
+
+    @Override
+    public SelectingCanvas<N> onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour) {
+        super.onCanvasClose(canvasCloseBehaviour);
+        return this;
+    }
+
+    @Override
     public N amount() {
         return amountReference.get();
     }
+
+    private void updateDisplay(final N amount) {
+        final SelectingCanvasDisplay<N> display = displayReference.get();
+        if (display != null) {
+            final CanvasElement element = display.renderer().apply(amount);
+            bind(display.source(), element);
+        }
+    }
+
+    private record SelectingCanvasDisplay<N extends Number>(char source, Function<N, CanvasElement> renderer) {}
 }

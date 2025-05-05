@@ -1,19 +1,27 @@
 package dev.shiza.uify.demo;
 
 import dev.shiza.uify.canvas.consume.ConsumingCanvas;
+import dev.shiza.uify.canvas.element.inventory.ItemStackBuilder;
+import dev.shiza.uify.canvas.layout.SelectingCanvas;
+import dev.shiza.uify.canvas.paginated.PaginatedCanvas;
+import dev.shiza.uify.canvas.sequential.SequentialCanvas;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.SceneComposer;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
+import dev.shiza.uify.scene.view.AnvilView;
 import dev.shiza.uify.scene.view.ChestView;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.minimessage.tag.resolver.Placeholder;
 import org.apache.commons.lang3.StringUtils;
@@ -37,6 +45,8 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
     DemoCommand(final Plugin plugin) {
         this.scenarios = new HashMap<>();
         this.scenarios.put("kit-editor", kitEditor());
+        this.scenarios.put("anvil-flex", anvilFlex());
+        this.scenarios.put("anvil-input", anvilInput());
         this.scenarios.put("gradient-title", gradientTitle(plugin));
     }
 
@@ -84,8 +94,49 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 
+    private Consumer<Player> anvilFlex() {
+        return viewer -> SceneComposer.compose(AnvilView.ofViewer(viewer))
+            .title(Component.text("Anvil flex"))
+            .canvas(PaginatedCanvas.rows(1)
+                .compose(position -> position.minimum(0, 1).maximum(0, 1))
+                .forward(
+                    0, 0,
+                    ItemStackBuilder.of(Material.ARROW).displayName(Component.text("Forward")).buildAsElement())
+                .backward(
+                    0, 2,
+                    ItemStackBuilder.of(Material.ARROW).displayName(Component.text("Backward")).buildAsElement())
+                .populate(Arrays.stream(Material.values())
+                    .filter(Material::isItem)
+                    .map(ItemStackBuilder::of)
+                    .map(ItemStackBuilder::buildAsElement)
+                    .toList()))
+            .dispatch();
+    }
+
+    private Consumer<Player> anvilInput() {
+        return viewer -> SceneComposer.compose(AnvilView.ofViewer(viewer))
+            .title(Component.text("Anvil input"))
+            .canvas(SequentialCanvas.rows(1)
+                .elements(
+                    ItemStackBuilder.of(Material.DIAMOND_SWORD)
+                        .displayName(Component.text("Please specify name of your opponent"))
+                        .buildAsElement()))
+            .onSceneDispatch((state, event) -> state.holder()
+                .anvilInventory()
+                .onRenameConfirmation(renameState -> {
+                    final boolean random = ThreadLocalRandom.current().nextBoolean();
+                    if (random) {
+                        viewer.sendMessage("Input: " + renameState.renameText());
+                        renameState.inventory().renameText("good good");
+                    } else {
+                        renameState.inventory().renameText("try again bro");
+                    }
+                }))
+            .dispatch();
+    }
+
     private Consumer<Player> kitEditor() {
-        return viewer -> SceneComposer.compose(ChestView.ofRows(4))
+        return viewer -> SceneComposer.compose(ChestView.ofRows(5))
             .title(MiniMessage.miniMessage().deserialize("<gray>Kit editor"))
             .viewer(viewer)
             .canvas(ConsumingCanvas.rows(2)
@@ -93,25 +144,34 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
                 .populateItems(Map.of(
                     new Position(0, 1), new ItemStack(Material.DIAMOND),
                     new Position(1, 5), new ItemStack(Material.DIAMOND_SWORD)))
-                .onConsumption(((state, event, result) -> {
-                    final String consumedTypes = result.items().stream()
-                        .map(ItemStack::getType)
-                        .map(Material::name)
-                        .distinct()
-                        .collect(Collectors.joining(","));
-                    final int consumedCount = result.items().size();
-                    viewer.sendMessage("Consumed %d items, of types: %s".formatted(consumedCount, consumedTypes));
-                }))
                 .onIndexedConsumption((state, event, result) -> {
                     final String consumedTypes = result.items().entrySet().stream()
                         .map(itemByRawSlot ->
                             "row: " + itemByRawSlot.getKey().row() + ", " +
-                            "col: " + itemByRawSlot.getKey().column() + ", " +
-                            "type: " + itemByRawSlot.getValue().getType().name())
+                                "col: " + itemByRawSlot.getKey().column() + ", " +
+                                "type: " + itemByRawSlot.getValue().getType().name())
                         .collect(Collectors.joining("\n"));
                     final int consumedCount = result.items().size();
                     viewer.sendMessage("Consumed %d items:%n%s".formatted(consumedCount, consumedTypes));
                 }))
+            .canvas(SelectingCanvas.<Integer>pattern("+ = -")
+                .position(position -> position.minimum(4, 2).maximum(4, 6))
+                .display('=', amount -> ItemStackBuilder.of(Material.DIAMOND).amount(amount).buildAsElement())
+                .mutator(
+                    '+',
+                    ItemStackBuilder.of(Material.PAPER)
+                        .displayName(Component.text("+").color(NamedTextColor.GREEN))
+                        .build(),
+                    number -> number + 1)
+                .mutator(
+                    '-',
+                    ItemStackBuilder.of(Material.PAPER)
+                        .displayName(Component.text("-").color(NamedTextColor.RED))
+                        .build(),
+                    number -> number - 1)
+                .minimum(1)
+                .maximum(64)
+                .amount(16))
             .dispatch();
     }
 

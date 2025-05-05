@@ -16,9 +16,11 @@ public interface SequentialCanvas extends Canvas {
             .position(position -> position.minimum(0, 0).maximum(rows - 1, 8));
     }
 
-    SequentialCanvas elements(final CanvasElement... elements);
+    default SequentialCanvas elements(final Collection<? extends CanvasElement> elements) {
+        return elements(elements, false);
+    }
 
-    SequentialCanvas elements(final Collection<? extends CanvasElement> elements);
+    SequentialCanvas elements(final CanvasElement... elements);
 
     SequentialCanvas elements(final Collection<? extends CanvasElement> elements, final boolean override);
 

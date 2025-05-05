@@ -17,7 +17,6 @@ import org.bukkit.inventory.InventoryHolder;
 import org.jetbrains.annotations.NotNull;
 import dev.shiza.uify.scene.Scene;
 import dev.shiza.uify.scene.SceneImpl;
-import org.jetbrains.annotations.Nullable;
 
 public final class SceneInventoryHolder implements InventoryHolder {
 
@@ -48,7 +47,12 @@ public final class SceneInventoryHolder implements InventoryHolder {
         return inventory;
     }
 
-    public @Nullable AnvilInventory anvilInventory() {
+    public @NotNull AnvilInventory anvilInventory() {
+        if (anvilInventory == null) {
+            throw new SceneInventoryGenericException(
+                "Could not get anvil inventory from scene inventory holder, because it was null.");
+        }
+
         return anvilInventory;
     }
 

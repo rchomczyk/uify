@@ -1,12 +1,17 @@
 package dev.shiza.uify.inventory.anvil;
 
+import dev.shiza.uify.inventory.anvil.rename.AnvilRenameConfirmationBehaviour;
+import dev.shiza.uify.inventory.anvil.rename.AnvilRenameConfirmationBehaviourState;
 import io.papermc.paper.adventure.AdventureComponent;
+import io.papermc.paper.adventure.PaperAdventure;
 import java.lang.invoke.MethodHandles;
 import java.lang.invoke.VarHandle;
 import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.serializer.plain.PlainTextComponentSerializer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.NonNullList;
 import net.minecraft.core.component.DataComponents;
+import net.minecraft.network.chat.contents.TranslatableContents;
 import net.minecraft.network.protocol.game.ClientboundContainerSetContentPacket;
 import net.minecraft.network.protocol.game.ClientboundOpenScreenPacket;
 import net.minecraft.server.level.ServerPlayer;
@@ -44,8 +49,10 @@ final class AnvilInventoryV1_21_4 extends AnvilMenu implements AnvilInventory {
 
     private final ServerPlayer player;
     private final CraftAnvilView view;
+    private String trackedDisplayName;
     private String renameText;
     private boolean visible;
+    private AnvilRenameConfirmationBehaviour renameConfirmationBehaviour = state -> {};
 
     AnvilInventoryV1_21_4(final Player player, final Component title) {
         this(((CraftPlayer) player).getHandle(), title);
@@ -66,6 +73,12 @@ final class AnvilInventoryV1_21_4 extends AnvilMenu implements AnvilInventory {
         final CraftInventoryAnvil inventory =
             new CraftInventoryAnvil(access.getLocation(), inputSlots, resultSlots);
         this.view = new CraftAnvilView(player.getBukkitEntity(), inventory, this);
+    }
+
+    @Override
+    public AnvilInventory onRenameConfirmation(final AnvilRenameConfirmationBehaviour behaviour) {
+        renameConfirmationBehaviour = renameConfirmationBehaviour.andThen(behaviour);
+        return this;
     }
 
     @Override
@@ -93,6 +106,7 @@ final class AnvilInventoryV1_21_4 extends AnvilMenu implements AnvilInventory {
 
     @Override
     public void renameText(final String renameText) {
+        this.trackedDisplayName = null;
         this.renameText = renameText;
 
         cost.set(0);
@@ -129,26 +143,45 @@ final class AnvilInventoryV1_21_4 extends AnvilMenu implements AnvilInventory {
     }
 
     @Override
-    public void removed(final net.minecraft.world.entity.player.Player player) {
+    public void removed(final net.minecraft.world.entity.player.@NotNull Player player) {
         visible = false;
     }
 
     @Override
-    protected void clearContainer(final net.minecraft.world.entity.player.Player player, final Container container) {
+    protected void clearContainer(
+        final net.minecraft.world.entity.player.@NotNull Player player,
+        final @NotNull Container container) {
         visible = false;
     }
 
     @Override
     public void createResult() {
+        final ItemStack sourceItem = inputSlots.getItem(0);
+        if (sourceItem.equals(ItemStack.EMPTY)) {
+            return;
+        }
+
+        final String initialText = displayName(sourceItem);
+        if (initialText == null) {
+            return;
+        }
+
+        if (renameText != null && renameText.equals(initialText) && trackedDisplayName != null) {
+            renameConfirmationBehaviour.accept(new AnvilRenameConfirmationBehaviourState(this, trackedDisplayName));
+        }
     }
 
     @Override
-    public boolean stillValid(final net.minecraft.world.entity.player.Player player) {
+    public boolean stillValid(final net.minecraft.world.entity.player.@NotNull Player player) {
         return true;
     }
 
     @Override
-    public boolean setItemName(final String itemName) {
+    public boolean setItemName(final @NotNull String itemName) {
+        if (!itemName.equals(renameText)) {
+            trackedDisplayName = renameText;
+        }
+
         renameText = itemName;
 
         super.setItemName(itemName);
@@ -157,5 +190,23 @@ final class AnvilInventoryV1_21_4 extends AnvilMenu implements AnvilInventory {
 
     private ItemStack item(final int slot) {
         return slot < INPUT_SLOTS ? inputSlots.getItem(slot) : resultSlots.getItem(0);
+    }
+
+    private String displayName(final ItemStack itemStack) {
+        final TranslatableContents contents = (TranslatableContents) itemStack.getDisplayName().getContents();
+        final Object[] args = contents.getArgs();
+        final net.minecraft.network.chat.Component[] siblings =
+            new net.minecraft.network.chat.Component[args.length];
+        for (int index = 0; index < args.length; index++) {
+            siblings[index] = (net.minecraft.network.chat.Component) args[index];
+        }
+
+        if (siblings.length == 0) {
+            return null;
+        }
+
+        final net.minecraft.network.chat.Component displayName = siblings[0];
+
+        return PlainTextComponentSerializer.plainText().serialize(PaperAdventure.asAdventure(displayName));
     }
 }

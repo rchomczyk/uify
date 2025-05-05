@@ -1,7 +1,9 @@
 package dev.shiza.uify.canvas.element;
 
+import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.element.behaviour.CanvasElementGenericBehaviour;
 import dev.shiza.uify.canvas.element.cooldown.CooldownGenericBehaviour;
+import dev.shiza.uify.scene.Scene;
 import io.papermc.paper.util.Tick;
 import java.time.Duration;
 import java.util.HashSet;
@@ -12,8 +14,6 @@ import java.util.function.Supplier;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
-import dev.shiza.uify.scene.Scene;
-import dev.shiza.uify.canvas.Canvas;
 import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.ApiStatus;
 
@@ -21,13 +21,13 @@ public class CanvasBaseElement implements CanvasElement {
 
     private Supplier<ItemStack> itemStack;
     private CanvasElementGenericBehaviour<Canvas, InventoryDragEvent> elementDragBehaviour =
-        (state, event) -> {};
+        CanvasElementGenericBehaviour.undefined();
     private CanvasElementGenericBehaviour<Canvas, InventoryClickEvent> elementClickBehaviour =
-        (state, event) -> {};
+        CanvasElementGenericBehaviour.undefined();
     private CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownBehaviour =
-        (state, event) -> {};
+        CooldownGenericBehaviour.undefined();
     private CooldownGenericBehaviour<Canvas, InventoryClickEvent> elementCooldownExpirationBehaviour =
-        (state, event) -> {};
+        CooldownGenericBehaviour.undefined();
     private Duration cooldown = Duration.ZERO;
     private final Set<Canvas> owners = new HashSet<>();
     private final AtomicBoolean transforming = new AtomicBoolean(false);

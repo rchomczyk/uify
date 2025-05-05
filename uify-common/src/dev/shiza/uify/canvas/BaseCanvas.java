@@ -18,7 +18,8 @@ import org.jetbrains.annotations.ApiStatus;
 @ApiStatus.Internal
 public abstract class BaseCanvas implements Canvas {
 
-    private CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour = (state, event) -> {};
+    private CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour =
+        CanvasGenericBehaviour.undefined();
     private CanvasPosition canvasPosition = new CanvasPosition();
     private Map<Integer, IdentifiedCanvasElement> renderedElements = Map.of();
     private final Set<SceneInventoryHolder> owners = new HashSet<>();

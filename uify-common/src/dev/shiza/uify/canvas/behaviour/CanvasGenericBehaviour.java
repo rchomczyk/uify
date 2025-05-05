@@ -6,6 +6,10 @@ import org.bukkit.event.inventory.InventoryEvent;
 @FunctionalInterface
 public interface CanvasGenericBehaviour<T extends Canvas, E extends InventoryEvent> {
 
+    static <T extends Canvas, E extends InventoryEvent> CanvasGenericBehaviour<T, E> undefined() {
+        return (state, event) -> {};
+    }
+
     void accept(final CanvasGenericBehaviourState<T> state, final E event);
 
     default CanvasGenericBehaviour<T, E> andThen(final CanvasGenericBehaviour<T, E> after) {
