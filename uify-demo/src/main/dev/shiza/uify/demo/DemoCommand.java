@@ -2,6 +2,7 @@ package dev.shiza.uify.demo;
 
 import dev.shiza.uify.canvas.consume.ConsumingCanvas;
 import dev.shiza.uify.canvas.element.inventory.ItemStackBuilder;
+import dev.shiza.uify.canvas.layout.LayoutCanvas;
 import dev.shiza.uify.canvas.layout.SelectingCanvas;
 import dev.shiza.uify.canvas.paginated.PaginatedCanvas;
 import dev.shiza.uify.canvas.sequential.SequentialCanvas;
@@ -44,6 +45,7 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
 
     DemoCommand(final Plugin plugin) {
         this.scenarios = new HashMap<>();
+        this.scenarios.put("border", border());
         this.scenarios.put("kit-editor", kitEditor());
         this.scenarios.put("anvil-flex", anvilFlex());
         this.scenarios.put("anvil-input", anvilInput());
@@ -92,6 +94,15 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
         }
 
         return Collections.emptyList();
+    }
+
+    private Consumer<Player> border() {
+        return viewer -> SceneComposer.compose(ChestView.ofRows(5))
+            .title(Component.text("Border"))
+            .viewer(viewer)
+            .canvas(LayoutCanvas.border(3, 7, ItemStackBuilder.of(Material.BLACK_STAINED_GLASS_PANE).buildAsElement())
+                .position(position -> position.minimum(1, 1).maximum(4, 7)))
+            .dispatch();
     }
 
     private Consumer<Player> anvilFlex() {

@@ -1,12 +1,12 @@
 package dev.shiza.uify.canvas.layout;
 
+import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.CanvasTypingException;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
+import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.HashMap;
 import java.util.function.UnaryOperator;
-import dev.shiza.uify.canvas.Canvas;
-import dev.shiza.uify.canvas.element.CanvasElement;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public interface LayoutCanvas extends Canvas {
@@ -29,10 +29,14 @@ public interface LayoutCanvas extends Canvas {
         for (int row = 0; row < rows; row++) {
             final boolean isTopBorder = row == 0;
             final boolean isBottomBorder = row == rows - 1;
-            if (isTopBorder || isBottomBorder) {
+            final boolean isAnyOfBorders = isTopBorder || isBottomBorder;
+            if (isAnyOfBorders) {
                 patternBuilder.append(String.valueOf(source).repeat(columns));
-                patternBuilder.append("\n");
+            } else {
+                final int contentLength = columns - 2;
+                patternBuilder.append(source).append(" ".repeat(contentLength)).append(source);
             }
+            patternBuilder.append("\n");
         }
 
         return pattern(patternBuilder.toString()).bind(source, element);
