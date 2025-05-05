@@ -49,6 +49,8 @@ public interface PaginatedCanvas extends Canvas {
 
     PaginatedCanvas backward(final int row, final int column, final CanvasElement element);
 
+    PaginatedCanvas navigation(final UnaryOperator<PaginationConfigurer> configurator);
+
     PaginatedCanvas populate(final Collection<? extends CanvasElement> elements, final boolean override);
 
     PaginatedCanvas compose(final UnaryOperator<CanvasPosition> mutator);

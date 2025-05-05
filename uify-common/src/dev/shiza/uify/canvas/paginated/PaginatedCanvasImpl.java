@@ -1,16 +1,16 @@
 package dev.shiza.uify.canvas.paginated;
 
+import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.CanvasMapperRenderer;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
+import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import dev.shiza.uify.position.Position;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.UnaryOperator;
-import dev.shiza.uify.canvas.BaseCanvas;
-import dev.shiza.uify.canvas.element.CanvasElement;
-import dev.shiza.uify.position.Position;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
@@ -208,6 +208,29 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
                 }
             }));
         return this;
+    }
+
+    @Override
+    public PaginatedCanvas navigation(final UnaryOperator<PaginationConfigurer> configurator) {
+        if (predefinedBindings != null) {
+            final Position navbarPositionForForward = predefinedBindings.navbarPositions().forward();
+            final Position navbarPositionForBackward = predefinedBindings.navbarPositions().backward();
+            if (navbarPositionForForward != null || navbarPositionForBackward != null) {
+                throw new PaginatedCanvasBindingException(
+                    "Paginated canvas already has predefined navbar positions, through pattern initialization.");
+            }
+        }
+
+        final PaginationConfigurer configurer = configurator.apply(PaginationConfigurer.empty());
+        final PaginationConfigurer.PaginationButtonConfigurer forward = configurer.forward();
+        final PaginationConfigurer.PaginationButtonConfigurer backward = configurer.backward();
+        if (forward == null || backward == null) {
+            throw new PaginatedCanvasBindingException(
+                "One of the navbar buttons is not defined, ensure that you properly configured it.");
+        }
+
+        return forward(forward.row(), forward.column(), forward.element())
+            .backward(backward.row(), backward.column(), backward.element());
     }
 
     @Override

@@ -120,12 +120,15 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
             .title(Component.text("Anvil flex"))
             .canvas(PaginatedCanvas.rows(1)
                 .compose(position -> position.minimum(0, 1).maximum(0, 1))
-                .forward(
-                    0, 0,
-                    ItemStackBuilder.of(Material.ARROW).displayName(Component.text("Forward")).buildAsElement())
-                .backward(
-                    0, 2,
-                    ItemStackBuilder.of(Material.ARROW).displayName(Component.text("Backward")).buildAsElement())
+                .navigation(configurer -> configurer
+                    .forward(button -> button.row(0).column(0)
+                        .element(ItemStackBuilder.of(Material.ARROW)
+                            .displayName(Component.text("Forward"))
+                            .buildAsElement()))
+                    .backward(button -> button.row(0).column(2)
+                        .element(ItemStackBuilder.of(Material.ARROW)
+                            .displayName(Component.text("Backward"))
+                            .buildAsElement())))
                 .populate(Arrays.stream(Material.values())
                     .filter(Predicate.not(Material::isAir))
                     .filter(Material::isItem)
@@ -138,22 +141,21 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
     private Consumer<Player> anvilInput() {
         return viewer -> SceneComposer.compose(AnvilView.ofViewer(viewer))
             .title(Component.text("Anvil input"))
-            .canvas(SequentialCanvas.rows(1)
-                .elements(
+            .canvas(LayoutCanvas.pattern("x y")
+                .bind(
+                    'x',
                     ItemStackBuilder.of(Material.DIAMOND_SWORD)
                         .displayName(Component.text("Please specify name of your opponent"))
-                        .buildAsElement()))
-            .onSceneDispatch((state, event) -> state.holder()
-                .anvilInventory()
-                .onRenameConfirmation(renameState -> {
-                    final boolean random = ThreadLocalRandom.current().nextBoolean();
-                    if (random) {
-                        viewer.sendMessage("Input: " + renameState.renameText());
-                        renameState.inventory().renameText("good good");
-                    } else {
-                        renameState.inventory().renameText("try again bro");
-                    }
-                }))
+                        .buildAsElement())
+                .bind(
+                    'y',
+                    ItemStackBuilder.of(Material.DIAMOND_SWORD)
+                        .buildAsElement()
+                        .onElementClick((state, event) -> {
+                            event.getWhoClicked()
+                                .sendMessage(state.holder().anvilInventory().renameText());
+                            state.holder().anvilInventory().renameText("Input has been procesed");
+                        })))
             .dispatch();
     }
 
