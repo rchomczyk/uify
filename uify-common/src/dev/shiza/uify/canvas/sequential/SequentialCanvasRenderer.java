@@ -37,11 +37,12 @@ final class SequentialCanvasRenderer implements CanvasRenderer<SequentialCanvas>
 
         int currentRow = 0;
         int currentColumn = 0;
+        int length = parentCanvas.position().maximum().column() - parentCanvas.position().minimum().column();
         for (final CanvasElement element : parentCanvas.elements()) {
             elementsByPosition.put(new Position(currentRow, currentColumn), element);
 
             currentColumn++;
-            if (currentColumn > parentCanvas.position().maximum().column()) {
+            if (currentColumn > length) {
                 currentColumn = 0;
                 currentRow++;
             }
