@@ -74,6 +74,16 @@ public final class ItemStackBuilder {
         return this;
     }
 
+    public ItemStackBuilder manipulateItemStack(final Consumer<ItemStack> mutator) {
+        mutator.accept(itemStack);
+        return this;
+    }
+
+    public ItemStackBuilder manipulateItemMeta(final Consumer<ItemMeta> mutator) {
+        mutator.accept(itemMeta);
+        return this;
+    }
+
     public ItemStack build() {
         itemStack.setItemMeta(itemMeta);
         return itemStack;

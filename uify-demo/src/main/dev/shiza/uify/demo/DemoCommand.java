@@ -2,7 +2,9 @@ package dev.shiza.uify.demo;
 
 import dev.shiza.uify.canvas.consume.ConsumingCanvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
+import dev.shiza.uify.canvas.element.ImmutableCanvasElement;
 import dev.shiza.uify.canvas.element.inventory.ItemStackBuilder;
+import dev.shiza.uify.canvas.element.inventory.ItemStacks;
 import dev.shiza.uify.canvas.layout.LayoutCanvas;
 import dev.shiza.uify.canvas.layout.SelectingCanvas;
 import dev.shiza.uify.canvas.paginated.PaginatedCanvas;
@@ -16,10 +18,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.format.NamedTextColor;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -41,10 +45,10 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
     DemoCommand() {
         this.scenarios = new HashMap<>();
         this.scenarios.put("border", border());
-        this.scenarios.put("kit-editor", kitEditor());
-        this.scenarios.put("anvil-flex", anvilFlex());
-        this.scenarios.put("anvil-input", anvilInput());
-        this.scenarios.put("gradient-title", gradientTitle());
+        this.scenarios.put("editor", kitEditor());
+        this.scenarios.put("input", anvilInput());
+        this.scenarios.put("animated", animated());
+        this.scenarios.put("leather", leatherArmor());
     }
 
     @Override
@@ -95,7 +99,7 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
         return viewer -> SceneComposer.compose(ChestView.ofRows(6))
             .title(Component.text("Border"))
             .viewer(viewer)
-            .canvas(LayoutCanvas.border(4, 7, ItemStackBuilder.of(Material.BLACK_STAINED_GLASS_PANE).buildAsElement())
+            .canvas(LayoutCanvas.border(4, 7, new ImmutableCanvasElement(() -> ItemStacks.namelessItem(Material.BLACK_STAINED_GLASS_PANE)))
                 .position(position -> position.minimum(1, 1).maximum(4, 7)))
             .canvas(SequentialCanvas.rows(3)
                 .position(position -> position.minimum(2, 2).maximum(3, 6))
@@ -193,13 +197,24 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
             .dispatch();
     }
 
-    private Consumer<Player> gradientTitle() {
+    private Consumer<Player> animated() {
         return viewer -> {
             final LongAdder currentTick = new LongAdder();
-            SceneComposer.compose(ChestView.ofRows(2))
+            SceneComposer.compose(ChestView.ofRows(4))
                 .title(MiniMessage.miniMessage().deserialize("<gradient:#5e4fa2:#f79459>Current tick: N/A</gradient>"))
                 .viewer(viewer)
+                .canvas(
+                    PaginatedCanvas.rows(4)
+                        .compose(position -> position.minimum(0, 0).maximum(0, 8))
+                        .compose(position -> position.minimum(1, 0).maximum(2, 0))
+                        .compose(position -> position.minimum(1, 8).maximum(2, 8))
+                        .compose(position -> position.minimum(3, 0).maximum(3, 8))
+                        .populate(shuffledElements(0))
+                        .onPaginatedCanvasTick(state -> state.canvas()
+                            .populate(shuffledElements(currentTick.intValue()), true)
+                            .update()))
                 .canvas(SequentialCanvas.rows(2)
+                    .position(canvasPosition -> canvasPosition.minimum(1, 1).maximum(2, 7))
                     .elements(randomElements())
                     .onSequentialCanvasTick(state -> {
                         state.canvas().elements(randomElements(), true);
@@ -215,6 +230,31 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
         };
     }
 
+    private Consumer<Player> leatherArmor() {
+        return viewer -> SceneComposer.compose(ChestView.ofRows(1))
+            .title(Component.text("Leather armor"))
+            .viewer(viewer)
+            .canvas(SequentialCanvas.rows(1)
+                .elements(
+                    new ImmutableCanvasElement(() -> ItemStacks.leatherArmor(Material.LEATHER_HELMET)),
+                    new ImmutableCanvasElement(() -> ItemStacks.leatherArmor(Material.LEATHER_CHESTPLATE)),
+                    new ImmutableCanvasElement(() -> ItemStacks.leatherArmor(Material.LEATHER_LEGGINGS)),
+                    new ImmutableCanvasElement(() -> ItemStacks.leatherArmor(Material.LEATHER_BOOTS)))
+                .onSequentialCanvasTick(state -> state.canvas().update()))
+            .dispatch();
+    }
+
+    private List<CanvasElement> shuffledElements(final int tick) {
+        return IntStream.rangeClosed(0, 21)
+            .mapToObj(index -> (tick % 2 == index % 2) ?
+                Material.WHITE_STAINED_GLASS_PANE :
+                Material.BLUE_STAINED_GLASS_PANE)
+            .map(ItemStacks::namelessItem)
+            .map(itemStack -> new ImmutableCanvasElement(() -> itemStack))
+            .map(CanvasElement.class::cast)
+            .toList();
+    }
+
     private List<CanvasElement> randomElements() {
         final List<CanvasElement> allElements = Arrays.stream(Material.values())
             .filter(Predicate.not(Material::isAir))
@@ -225,7 +265,7 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
 
         Collections.shuffle(allElements);
         return allElements.stream()
-            .limit(18)
+            .limit(ThreadLocalRandom.current().nextInt(1, 15))
             .toList();
     }
 }
