@@ -3,6 +3,7 @@ package dev.shiza.uify.canvas;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import dev.shiza.uify.canvas.tick.CanvasTickBehaviour;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import java.util.Collections;
 import java.util.HashMap;
@@ -20,8 +21,10 @@ public abstract class BaseCanvas implements Canvas {
 
     private CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour =
         CanvasGenericBehaviour.undefined();
+    private CanvasTickBehaviour<? extends Canvas> canvasTickBehaviour = CanvasTickBehaviour.undefined();
     private CanvasPosition canvasPosition = new CanvasPosition();
     private Map<Integer, IdentifiedCanvasElement> renderedElements = Map.of();
+    private Class<? extends Canvas> canvasTickType;
     private final Set<SceneInventoryHolder> owners = new HashSet<>();
 
     @Override
@@ -80,6 +83,19 @@ public abstract class BaseCanvas implements Canvas {
         return this;
     }
 
+    @Override
+    public <T extends Canvas> Canvas onCanvasTick(
+        final Class<T> canvasType, final CanvasTickBehaviour<T> canvasTickBehaviour) {
+        if (this.canvasTickType != null && !this.canvasTickType.equals(canvasType)) {
+            throw new CanvasTypingException("You cannot mix generic type for canvases.");
+        }
+
+        this.canvasTickType = canvasType;
+        // noinspection unchecked
+        this.canvasTickBehaviour = ((CanvasTickBehaviour<T>) this.canvasTickBehaviour).andThen(canvasTickBehaviour);
+        return this;
+    }
+
     public Set<SceneInventoryHolder> owners() {
         return owners;
     }
@@ -94,5 +110,13 @@ public abstract class BaseCanvas implements Canvas {
 
     public CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour() {
         return canvasCloseBehaviour;
+    }
+
+    public CanvasTickBehaviour<? extends Canvas> canvasTickBehaviour() {
+        return canvasTickBehaviour;
+    }
+
+    public Class<? extends Canvas> canvasType() {
+        return canvasTickType;
     }
 }

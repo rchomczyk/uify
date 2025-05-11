@@ -1,6 +1,7 @@
 package dev.shiza.uify.demo;
 
 import dev.shiza.uify.canvas.consume.ConsumingCanvas;
+import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.element.inventory.ItemStackBuilder;
 import dev.shiza.uify.canvas.layout.LayoutCanvas;
 import dev.shiza.uify.canvas.layout.SelectingCanvas;
@@ -196,15 +197,35 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
     private Consumer<Player> gradientTitle() {
         return viewer -> {
             final AtomicInteger currentTick = new AtomicInteger();
-            SceneComposer.compose(ChestView.ofRows(1))
+            SceneComposer.compose(ChestView.ofRows(2))
                 .title(MiniMessage.miniMessage()
                     .deserialize("<gradient:#5e4fa2:#f79459>Current tick: N/A</gradient>"))
                 .viewer(viewer)
+                .canvas(SequentialCanvas.rows(2)
+                    .elements(randomElements())
+                    .onCanvasTick(SequentialCanvas.class, state -> {
+                        state.canvas().elements(randomElements(), true);
+                        state.canvas().update();
+                    }))
                 .onSceneTick(holder ->
                     holder.title(MiniMessage.miniMessage().deserialize(
                         "<gradient:#5e4fa2:#f79459>Current tick: <tick></gradient>",
                         Placeholder.unparsed("tick", String.valueOf(currentTick.incrementAndGet())))))
                 .dispatch();
         };
+    }
+
+    private List<CanvasElement> randomElements() {
+        final List<CanvasElement> allElements = Arrays.stream(Material.values())
+            .filter(Predicate.not(Material::isAir))
+            .filter(Material::isItem)
+            .map(ItemStackBuilder::of)
+            .map(ItemStackBuilder::buildAsElement)
+            .collect(Collectors.toList());
+
+        Collections.shuffle(allElements);
+        return allElements.stream()
+            .limit(18)
+            .toList();
     }
 }
