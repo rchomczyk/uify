@@ -2,8 +2,9 @@ package dev.shiza.uify.canvas.position;
 
 import dev.shiza.uify.position.Position;
 import java.util.Objects;
+import org.jetbrains.annotations.Range;
 
-public record CanvasPosition(Position minimum, Position maximum) {
+public record CanvasPosition(@Range(from = 0, to = 5) Position minimum, @Range(from = 0, to = 8) Position maximum) {
 
     private static final int MINIMUM_COLUMN = 0;
     private static final int MAXIMUM_COLUMN = 8;
@@ -22,11 +23,11 @@ public record CanvasPosition(Position minimum, Position maximum) {
         return new CanvasPosition(position, position);
     }
 
-    public CanvasPosition minimum(final int row, final int column) {
+    public CanvasPosition minimum(final @Range(from = 0, to = 5) int row, final @Range(from = 0, to = 8) int column) {
         return new CanvasPosition(new Position(row, column), maximum);
     }
 
-    public CanvasPosition maximum(final int row, final int column) {
+    public CanvasPosition maximum(final @Range(from = 0, to = 5) int row, final @Range(from = 0, to = 8) int column) {
         return new CanvasPosition(minimum, new Position(row, column));
     }
 
