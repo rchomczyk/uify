@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.element.cooldown;
 
+import dev.shiza.uify.event.InventoryEvents;
 import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.element.CanvasBaseElement;
@@ -9,10 +10,6 @@ import java.time.Instant;
 import java.util.Optional;
 import net.jodah.expiringmap.ExpirationListener;
 import org.bukkit.entity.HumanEntity;
-import org.bukkit.event.inventory.ClickType;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 
 final class CooldownExpirationListener implements ExpirationListener<CooldownCompositeKey, Instant> {
 
@@ -37,13 +34,8 @@ final class CooldownExpirationListener implements ExpirationListener<CooldownCom
                 element.elementCooldownExpirationBehaviour()
                     .accept(
                         new CooldownGenericBehaviourState<>(holder, owner, element, Duration.ZERO),
-                        dummyEvent(viewer));
+                        InventoryEvents.dummyClickEvent(viewer));
             }
         }
-    }
-
-    private InventoryClickEvent dummyEvent(final HumanEntity viewer) {
-        return new InventoryClickEvent(
-            viewer.getOpenInventory(), InventoryType.SlotType.OUTSIDE, 999, ClickType.LEFT, InventoryAction.NOTHING);
     }
 }

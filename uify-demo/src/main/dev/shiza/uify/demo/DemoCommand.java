@@ -8,7 +8,6 @@ import dev.shiza.uify.canvas.paginated.PaginatedCanvas;
 import dev.shiza.uify.canvas.sequential.SequentialCanvas;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.SceneComposer;
-import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import dev.shiza.uify.scene.view.AnvilView;
 import dev.shiza.uify.scene.view.ChestView;
 import java.util.Arrays;
@@ -16,9 +15,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -33,11 +30,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.InventoryHolder;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitScheduler;
-import org.bukkit.scheduler.BukkitTask;
 import org.jetbrains.annotations.NotNull;
 
 final class DemoCommand implements CommandExecutor, TabCompleter {
@@ -50,7 +44,7 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
         this.scenarios.put("kit-editor", kitEditor());
         this.scenarios.put("anvil-flex", anvilFlex());
         this.scenarios.put("anvil-input", anvilInput());
-        this.scenarios.put("gradient-title", gradientTitle(plugin));
+        this.scenarios.put("gradient-title", gradientTitle());
     }
 
     @Override
@@ -199,39 +193,18 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
             .dispatch();
     }
 
-    private Consumer<Player> gradientTitle(final Plugin plugin) {
+    private Consumer<Player> gradientTitle() {
         return viewer -> {
+            final AtomicInteger currentTick = new AtomicInteger();
             SceneComposer.compose(ChestView.ofRows(1))
                 .title(MiniMessage.miniMessage()
-                    .deserialize("<gradient:#5e4fa2:#f79459>Setting up rotations...</gradient>"))
+                    .deserialize("<gradient:#5e4fa2:#f79459>Current tick: N/A</gradient>"))
                 .viewer(viewer)
+                .onSceneTick(holder ->
+                    holder.title(MiniMessage.miniMessage().deserialize(
+                        "<gradient:#5e4fa2:#f79459>Current tick: <tick></gradient>",
+                        Placeholder.unparsed("tick", String.valueOf(currentTick.incrementAndGet())))))
                 .dispatch();
-
-            final InventoryHolder activeHolder = viewer.getOpenInventory().getTopInventory().getHolder();
-            if (!(activeHolder instanceof SceneInventoryHolder sceneInventoryHolder)) {
-                return;
-            }
-
-            final BukkitScheduler scheduler = plugin.getServer().getScheduler();
-
-            final AtomicReference<BukkitTask> taskReference = new AtomicReference<>();
-            final AtomicInteger rotations = new AtomicInteger();
-
-            final BukkitTask scheduledTask = scheduler.runTaskTimer(
-                plugin, () -> {
-                    final int current = rotations.incrementAndGet();
-                    final BukkitTask resolvedTask = taskReference.get();
-                    if (current > 5 && resolvedTask != null) {
-                        resolvedTask.cancel();
-                        return;
-                    }
-
-                    final Component newTitle = MiniMessage.miniMessage().deserialize(
-                        "<gradient:#5e4fa2:#f79459>Current rotation: <rotation></gradient>",
-                        Placeholder.unparsed("rotation", String.valueOf(current)));
-                    sceneInventoryHolder.title(newTitle);
-                }, 50L, 50L);
-            taskReference.set(scheduledTask);
         };
     }
 }
