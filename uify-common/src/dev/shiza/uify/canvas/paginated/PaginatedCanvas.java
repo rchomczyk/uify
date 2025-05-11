@@ -2,6 +2,7 @@ package dev.shiza.uify.canvas.paginated;
 
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import dev.shiza.uify.canvas.tick.CanvasTickBehaviour;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
 import dev.shiza.uify.canvas.Canvas;
@@ -33,6 +34,11 @@ public interface PaginatedCanvas extends Canvas {
 
     default PaginatedCanvas populate(final Collection<? extends CanvasElement> elements) {
         return populate(elements, false);
+    }
+
+    default PaginatedCanvas onPaginatedCanvasTick(final CanvasTickBehaviour<PaginatedCanvas> canvasTickBehaviour) {
+        onCanvasTick(PaginatedCanvas.class, canvasTickBehaviour);
+        return this;
     }
 
     PaginatedCanvas page(final int page);

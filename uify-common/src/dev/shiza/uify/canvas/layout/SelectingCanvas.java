@@ -4,6 +4,7 @@ import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import dev.shiza.uify.canvas.tick.CanvasTickBehaviour;
 import java.util.HashMap;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -18,6 +19,12 @@ public interface SelectingCanvas<N extends Number> extends LayoutCanvas {
 
     static <N extends Number> SelectingCanvas<N> pattern(final String... patterns) {
         return new SelectingCanvasImpl<>(String.join("\n", patterns), new HashMap<>(), new HashMap<>());
+    }
+
+    default SelectingCanvas<N> onSelectingCanvasTick(final CanvasTickBehaviour<SelectingCanvas<N>> canvasTickBehaviour) {
+        // noinspection unchecked
+        onCanvasTick((Class<SelectingCanvas<N>>) (Class<?>) SelectingCanvas.class, canvasTickBehaviour);
+        return this;
     }
 
     SelectingCanvas<N> mutator(

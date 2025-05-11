@@ -4,6 +4,7 @@ import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import dev.shiza.uify.canvas.tick.CanvasTickBehaviour;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import java.util.ArrayList;
@@ -38,6 +39,11 @@ public interface ConsumingCanvas extends Canvas, ConsumingCanvasBehaviours {
 
     default ConsumingCanvas populate(final Map<Position, ? extends CanvasElement> elements) {
         return populate(elements, false);
+    }
+
+    default ConsumingCanvas onConsumingCanvasTick(final CanvasTickBehaviour<ConsumingCanvas> canvasTickBehaviour) {
+        onCanvasTick(ConsumingCanvas.class, canvasTickBehaviour);
+        return this;
     }
 
     ConsumingCanvas populateItems(final Collection<ItemStack> items, final boolean override);

@@ -32,14 +32,13 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.jetbrains.annotations.NotNull;
 
 final class DemoCommand implements CommandExecutor, TabCompleter {
 
     private final Map<String, Consumer<Player>> scenarios;
 
-    DemoCommand(final Plugin plugin) {
+    DemoCommand() {
         this.scenarios = new HashMap<>();
         this.scenarios.put("border", border());
         this.scenarios.put("kit-editor", kitEditor());
@@ -203,7 +202,7 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
                 .viewer(viewer)
                 .canvas(SequentialCanvas.rows(2)
                     .elements(randomElements())
-                    .onCanvasTick(SequentialCanvas.class, state -> {
+                    .onSequentialCanvasTick(state -> {
                         state.canvas().elements(randomElements(), true);
                         state.canvas().update();
                     }))

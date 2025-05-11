@@ -4,6 +4,7 @@ import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import dev.shiza.uify.canvas.tick.CanvasTickBehaviour;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.function.UnaryOperator;
@@ -18,6 +19,11 @@ public interface SequentialCanvas extends Canvas {
 
     default SequentialCanvas elements(final Collection<? extends CanvasElement> elements) {
         return elements(elements, false);
+    }
+
+    default SequentialCanvas onSequentialCanvasTick(final CanvasTickBehaviour<SequentialCanvas> canvasTickBehaviour) {
+        onCanvasTick(SequentialCanvas.class, canvasTickBehaviour);
+        return this;
     }
 
     SequentialCanvas elements(final CanvasElement... elements);

@@ -5,6 +5,7 @@ import dev.shiza.uify.canvas.CanvasTypingException;
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
+import dev.shiza.uify.canvas.tick.CanvasTickBehaviour;
 import java.util.HashMap;
 import java.util.function.UnaryOperator;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -44,6 +45,11 @@ public interface LayoutCanvas extends Canvas {
 
     static LayoutCanvas border(final int rows, final int columns, final CanvasElement element) {
         return border('x', rows, columns, element);
+    }
+
+    default LayoutCanvas onLayoutCanvasTick(final CanvasTickBehaviour<LayoutCanvas> canvasTickBehaviour) {
+        onCanvasTick(LayoutCanvas.class, canvasTickBehaviour);
+        return this;
     }
 
     LayoutCanvas bind(final int row, final int column, final CanvasElement element);
