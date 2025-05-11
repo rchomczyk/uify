@@ -41,7 +41,7 @@ final class SequentialCanvasRenderer implements CanvasRenderer<SequentialCanvas>
             elementsByPosition.put(new Position(currentRow, currentColumn), element);
 
             currentColumn++;
-            if (currentColumn >= parentCanvas.position().maximum().column() - 1) {
+            if (currentColumn > parentCanvas.position().maximum().column()) {
                 currentColumn = 0;
                 currentRow++;
             }
