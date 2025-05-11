@@ -16,7 +16,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -195,10 +195,9 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
 
     private Consumer<Player> gradientTitle() {
         return viewer -> {
-            final AtomicInteger currentTick = new AtomicInteger();
+            final LongAdder currentTick = new LongAdder();
             SceneComposer.compose(ChestView.ofRows(2))
-                .title(MiniMessage.miniMessage()
-                    .deserialize("<gradient:#5e4fa2:#f79459>Current tick: N/A</gradient>"))
+                .title(MiniMessage.miniMessage().deserialize("<gradient:#5e4fa2:#f79459>Current tick: N/A</gradient>"))
                 .viewer(viewer)
                 .canvas(SequentialCanvas.rows(2)
                     .elements(randomElements())
@@ -206,10 +205,12 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
                         state.canvas().elements(randomElements(), true);
                         state.canvas().update();
                     }))
-                .onSceneTick(holder ->
+                .onSceneTick(holder -> {
+                    currentTick.increment();
                     holder.title(MiniMessage.miniMessage().deserialize(
                         "<gradient:#5e4fa2:#f79459>Current tick: <tick></gradient>",
-                        Placeholder.unparsed("tick", String.valueOf(currentTick.incrementAndGet())))))
+                        Placeholder.unparsed("tick", String.valueOf(currentTick.longValue()))));
+                })
                 .dispatch();
         };
     }
