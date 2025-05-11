@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import org.bukkit.entity.HumanEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import dev.shiza.uify.position.PositionUtils;
@@ -45,6 +47,10 @@ public interface CanvasRenderer<T> {
         final Set<Integer> renderedElementsSlotIndexes = new HashSet<>(renderedElements.keySet());
         previousElementsSlotIndexes.removeAll(renderedElementsSlotIndexes);
         previousElementsSlotIndexes.forEach(slotIndex -> inventory.setItem(slotIndex, null));
+
+        for (final HumanEntity viewer : inventory.getViewers()) {
+            ((Player) viewer).updateInventory();
+        }
 
         return renderedElements;
     }
