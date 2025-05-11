@@ -1,7 +1,7 @@
 package dev.shiza.uify.canvas;
 
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
-import dev.shiza.uify.canvas.tick.CanvasTickBehaviour;
+import dev.shiza.uify.canvas.behaviour.tick.CanvasTickBehaviour;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 
 public interface CanvasBehaviours {

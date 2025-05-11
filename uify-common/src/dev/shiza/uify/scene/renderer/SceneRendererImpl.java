@@ -1,7 +1,7 @@
 package dev.shiza.uify.scene.renderer;
 
 import dev.shiza.uify.canvas.BaseCanvas;
-import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
+import dev.shiza.uify.canvas.element.IdentifiedCanvasElement;
 import java.util.HashMap;
 import java.util.Map;
 import dev.shiza.uify.scene.Scene;

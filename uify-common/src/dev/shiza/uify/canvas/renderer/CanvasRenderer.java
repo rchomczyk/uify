@@ -1,6 +1,6 @@
 package dev.shiza.uify.canvas.renderer;
 
-import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
+import dev.shiza.uify.canvas.element.IdentifiedCanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
 import java.util.HashMap;
 import java.util.HashSet;

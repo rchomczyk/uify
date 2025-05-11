@@ -1,7 +1,7 @@
 package dev.shiza.uify.scene.inventory;
 
 import dev.shiza.uify.canvas.Canvas;
-import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
+import dev.shiza.uify.canvas.element.IdentifiedCanvasElement;
 import dev.shiza.uify.inventory.InventoryAccessorProvider;
 import dev.shiza.uify.inventory.anvil.AnvilInventory;
 import dev.shiza.uify.inventory.anvil.AnvilInventoryFactory;
@@ -49,7 +49,7 @@ public final class SceneInventoryHolder implements InventoryHolder {
 
     public @NotNull AnvilInventory anvilInventory() {
         if (anvilInventory == null) {
-            throw new SceneInventoryGenericException(
+            throw new SceneInventoryResolvingException(
                 "Could not get anvil inventory from scene inventory holder, because it was null.");
         }
 

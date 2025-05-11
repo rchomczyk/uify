@@ -1,18 +1,19 @@
 package dev.shiza.uify.demo;
 
-import dev.shiza.uify.canvas.consume.ConsumingCanvas;
 import dev.shiza.uify.canvas.element.CanvasElement;
 import dev.shiza.uify.canvas.element.ImmutableCanvasElement;
-import dev.shiza.uify.canvas.element.inventory.ItemStackBuilder;
-import dev.shiza.uify.canvas.element.inventory.ItemStacks;
-import dev.shiza.uify.canvas.layout.LayoutCanvas;
-import dev.shiza.uify.canvas.layout.SelectingCanvas;
-import dev.shiza.uify.canvas.paginated.PaginatedCanvas;
-import dev.shiza.uify.canvas.sequential.SequentialCanvas;
+import dev.shiza.uify.canvases.consume.ConsumingCanvas;
+import dev.shiza.uify.canvases.layout.LayoutCanvas;
+import dev.shiza.uify.canvases.layout.SelectingCanvas;
+import dev.shiza.uify.canvases.paginated.PaginatedCanvas;
+import dev.shiza.uify.canvases.sequential.SequentialCanvas;
+import dev.shiza.uify.inventory.item.ItemStackBuilder;
+import dev.shiza.uify.inventory.item.ItemStacks;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.SceneComposer;
 import dev.shiza.uify.scene.view.AnvilView;
 import dev.shiza.uify.scene.view.ChestView;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,9 +47,10 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
         this.scenarios = new HashMap<>();
         this.scenarios.put("border", border());
         this.scenarios.put("editor", kitEditor());
-        this.scenarios.put("input", anvilInput());
+        this.scenarios.put("input", input());
         this.scenarios.put("animated", animated());
         this.scenarios.put("leather", leatherArmor());
+        this.scenarios.put("cooldown", cooldowns());
     }
 
     @Override
@@ -95,11 +97,36 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
         return Collections.emptyList();
     }
 
+    private Consumer<Player> cooldowns() {
+        return viewer -> SceneComposer.compose(ChestView.ofRows(1))
+            .title(Component.text("Cooldowns"))
+            .viewer(viewer)
+            .canvas(SequentialCanvas.rows(1)
+                .elements(ItemStackBuilder.of(Material.DIAMOND_SWORD)
+                    .displayName(Component.text("Click me"))
+                    .buildAsElement()
+                    .onElementClick((state, event) ->
+                        event.getWhoClicked()
+                            .sendMessage(Component.text("Nice! Click has been processed")))
+                    .onElementCooldown((state, event) ->
+                        event.getWhoClicked()
+                            .sendMessage(MiniMessage.miniMessage().deserialize(
+                                "You need to wait for next <time>",
+                                Placeholder.unparsed("time", state.remainingPeriod().toString()))))
+                    .onElementCooldownExpiration((state, event) ->
+                        event.getWhoClicked().sendMessage(Component.text("You can click me again!")))
+                    .cooldown(Duration.ofSeconds(30))))
+            .dispatch();
+    }
+
     private Consumer<Player> border() {
         return viewer -> SceneComposer.compose(ChestView.ofRows(6))
             .title(Component.text("Border"))
             .viewer(viewer)
-            .canvas(LayoutCanvas.border(4, 7, new ImmutableCanvasElement(() -> ItemStacks.namelessItem(Material.BLACK_STAINED_GLASS_PANE)))
+            .canvas(LayoutCanvas.border(
+                    4,
+                    7,
+                    new ImmutableCanvasElement(() -> ItemStacks.namelessItem(Material.BLACK_STAINED_GLASS_PANE)))
                 .position(position -> position.minimum(1, 1).maximum(4, 7)))
             .canvas(SequentialCanvas.rows(3)
                 .position(position -> position.minimum(2, 2).maximum(3, 6))
@@ -113,30 +140,7 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
             .dispatch();
     }
 
-    private Consumer<Player> anvilFlex() {
-        return viewer -> SceneComposer.compose(AnvilView.ofViewer(viewer))
-            .title(Component.text("Anvil flex"))
-            .canvas(PaginatedCanvas.rows(1)
-                .compose(position -> position.minimum(0, 1).maximum(0, 1))
-                .navigation(configurer -> configurer
-                    .forward(button -> button.row(0).column(0)
-                        .element(ItemStackBuilder.of(Material.ARROW)
-                            .displayName(Component.text("Forward"))
-                            .buildAsElement()))
-                    .backward(button -> button.row(0).column(2)
-                        .element(ItemStackBuilder.of(Material.ARROW)
-                            .displayName(Component.text("Backward"))
-                            .buildAsElement())))
-                .populate(Arrays.stream(Material.values())
-                    .filter(Predicate.not(Material::isAir))
-                    .filter(Material::isItem)
-                    .map(ItemStackBuilder::of)
-                    .map(ItemStackBuilder::buildAsElement)
-                    .toList()))
-            .dispatch();
-    }
-
-    private Consumer<Player> anvilInput() {
+    private Consumer<Player> input() {
         return viewer -> SceneComposer.compose(AnvilView.ofViewer(viewer))
             .title(Component.text("Anvil input"))
             .canvas(LayoutCanvas.pattern("x y")

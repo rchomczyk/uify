@@ -2,7 +2,7 @@ package dev.shiza.uify.canvas.element;
 
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.element.behaviour.CanvasElementGenericBehaviour;
-import dev.shiza.uify.canvas.element.cooldown.CooldownGenericBehaviour;
+import dev.shiza.uify.canvas.element.behaviour.cooldown.CooldownGenericBehaviour;
 import dev.shiza.uify.scene.Scene;
 import io.papermc.paper.util.Tick;
 import java.time.Duration;

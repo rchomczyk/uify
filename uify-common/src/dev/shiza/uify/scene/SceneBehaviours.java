@@ -1,7 +1,7 @@
 package dev.shiza.uify.scene;
 
 import dev.shiza.uify.scene.behaviour.SceneGenericBehaviour;
-import dev.shiza.uify.scene.tick.SceneTickBehaviour;
+import dev.shiza.uify.scene.behaviour.tick.SceneTickBehaviour;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
 

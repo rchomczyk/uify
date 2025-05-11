@@ -2,11 +2,10 @@ package dev.shiza.uify.canvas.element.cooldown;
 
 import dev.shiza.uify.canvas.element.CanvasBaseElement;
 import dev.shiza.uify.canvas.element.CanvasElement;
+import dev.shiza.uify.canvas.element.cooldown.expiration.ExpiringMap;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
-import net.jodah.expiringmap.ExpiringMap;
 import org.bukkit.entity.HumanEntity;
 
 final class CooldownService implements CooldownFacade {
@@ -26,7 +25,7 @@ final class CooldownService implements CooldownFacade {
     public boolean isOnCooldown(final CanvasElement element, final HumanEntity viewer) {
         final Instant now = Instant.now();
         return cooldowns.containsKey(new CooldownCompositeKey(element, viewer.getUniqueId())) &&
-               cooldowns.get(new CooldownCompositeKey(element, viewer.getUniqueId())).isAfter(now);
+            cooldowns.get(new CooldownCompositeKey(element, viewer.getUniqueId())).isAfter(now);
     }
 
     @Override
@@ -39,10 +38,6 @@ final class CooldownService implements CooldownFacade {
 
     private void applyCooldown(final CanvasElement element, final HumanEntity viewer, final Duration period) {
         final Instant now = Instant.now();
-        cooldowns.put(
-            new CooldownCompositeKey(element, viewer.getUniqueId()),
-            now.plus(period),
-            period.toMillis(),
-            TimeUnit.MILLISECONDS);
+        cooldowns.put(new CooldownCompositeKey(element, viewer.getUniqueId()), now.plus(period), period);
     }
 }

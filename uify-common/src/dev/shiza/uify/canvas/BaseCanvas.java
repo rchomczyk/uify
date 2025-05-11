@@ -1,9 +1,9 @@
 package dev.shiza.uify.canvas;
 
 import dev.shiza.uify.canvas.behaviour.CanvasGenericBehaviour;
-import dev.shiza.uify.canvas.element.identity.IdentifiedCanvasElement;
+import dev.shiza.uify.canvas.element.IdentifiedCanvasElement;
 import dev.shiza.uify.canvas.position.CanvasPosition;
-import dev.shiza.uify.canvas.tick.CanvasTickBehaviour;
+import dev.shiza.uify.canvas.behaviour.tick.CanvasTickBehaviour;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import java.util.Collections;
 import java.util.HashMap;

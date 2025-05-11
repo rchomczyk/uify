@@ -15,4 +15,9 @@ public class DemoBukkitPlugin extends JavaPlugin {
 
         Objects.requireNonNull(getCommand("uify")).setExecutor(new DemoCommand());
     }
+
+    @Override
+    public void onDisable() {
+        Uify.destroy();
+    }
 }

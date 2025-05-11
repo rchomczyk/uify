@@ -1,7 +1,7 @@
 package dev.shiza.uify.scene;
 
 import dev.shiza.uify.scene.behaviour.SceneGenericBehaviour;
-import dev.shiza.uify.scene.tick.SceneTickBehaviour;
+import dev.shiza.uify.scene.behaviour.tick.SceneTickBehaviour;
 import dev.shiza.uify.scene.view.ChestView;
 import dev.shiza.uify.scene.view.SceneView;
 import java.util.Collections;

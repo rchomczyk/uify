@@ -1,6 +1,8 @@
 package dev.shiza.uify;
 
 import dev.shiza.uify.canvas.element.CanvasElementInteractionListener;
+import dev.shiza.uify.canvas.element.cooldown.expiration.ExpirationScheduler;
+import dev.shiza.uify.canvas.element.cooldown.expiration.PaperExpirationSchedulerAccessor;
 import dev.shiza.uify.scene.SceneInteractionListener;
 import dev.shiza.uify.scene.tick.SceneTickTask;
 import dev.shiza.uify.time.MinecraftTimeEquivalent;
@@ -18,6 +20,7 @@ public final class Uify {
     private Uify() {}
 
     public static void configure(final Plugin plugin) {
+        PaperExpirationSchedulerAccessor.initializePaperExpirationScheduler(plugin);
         plugin.getServer().getPluginManager().registerEvents(new SceneInteractionListener(), plugin);
         plugin.getServer().getPluginManager().registerEvents(new CanvasElementInteractionListener(), plugin);
     }
@@ -36,6 +39,13 @@ public final class Uify {
                 .runTaskTimer(plugin, new SceneTickTask(), intervalInTicks, intervalInTicks);
 
             HAS_TICKING_SUPPORT.set(true);
+        }
+    }
+
+    public static void destroy() {
+        final ExpirationScheduler expirationScheduler = PaperExpirationSchedulerAccessor.paperExpirationScheduler();
+        if (expirationScheduler != null) {
+            expirationScheduler.shutdown();
         }
     }
 

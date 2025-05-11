@@ -1,6 +1,7 @@
 package dev.shiza.uify.scene.tick;
 
 import dev.shiza.uify.scene.SceneImpl;
+import dev.shiza.uify.scene.behaviour.tick.SceneTickBehaviour;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import java.util.List;
 import java.util.Set;
