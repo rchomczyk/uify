@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import org.bukkit.inventory.Inventory;
 import dev.shiza.uify.canvas.element.CanvasElement;
-import dev.shiza.uify.canvas.paginated.PaginatedCanvasImpl.PrecalculatedSlotIndex;
 import dev.shiza.uify.canvas.renderer.CanvasRenderer;
 import dev.shiza.uify.position.Position;
 import dev.shiza.uify.scene.Scene;
@@ -37,10 +36,10 @@ final class PaginatedCanvasRenderer implements CanvasRenderer<PaginatedCanvas> {
             ? Collections.emptyList()
             : partitionedElements.get(parentCanvas.currentPage());
 
-        final PrecalculatedSlotIndex[] precalculatedSlotIndexes = parentCanvas.precalculatedSlotIndexes();
+        final Position[] precalculatedSlotIndexes = parentCanvas.precalculatedSlotIndexes();
         final int elementsCount = currentPartition.size();
         for (int index = 0; index < elementsCount; index++) {
-            final PrecalculatedSlotIndex precalculatedSlotIndex = precalculatedSlotIndexes[index];
+            final Position precalculatedSlotIndex = precalculatedSlotIndexes[index];
             mutableBindingsByPosition.put(
                 new Position(precalculatedSlotIndex.row(), precalculatedSlotIndex.column()),
                 currentPartition.get(index));

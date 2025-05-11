@@ -19,7 +19,7 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
     private final List<CanvasPosition> compositions;
     private final List<CanvasElement> rawElements;
     private List<List<CanvasElement>> partitionedElements;
-    private PrecalculatedSlotIndex[] precalculatedSlotIndexes;
+    private Position[] precalculatedSlotIndexes;
     private PredefinedBindings predefinedBindings;
     private NavigationalItemBinding forwardItemBinding;
     private NavigationalItemBinding backwardItemBinding;
@@ -29,7 +29,7 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
         final List<CanvasPosition> compositions,
         final List<CanvasElement> rawElements,
         final List<List<CanvasElement>> partitionedElements,
-        final PrecalculatedSlotIndex[] precalculatedSlotIndexes,
+        final Position[] precalculatedSlotIndexes,
         final int currentPage) {
         this.compositions = compositions;
         this.rawElements = rawElements;
@@ -39,7 +39,7 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
     }
 
     PaginatedCanvasImpl() {
-        this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new PrecalculatedSlotIndex[0], 0);
+        this(new ArrayList<>(), new ArrayList<>(), new ArrayList<>(), new Position[0], 0);
     }
 
     static PaginatedCanvas ofPattern(final String pattern) {
@@ -106,11 +106,6 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
         if (activePositions.isEmpty()) {
             throw new PaginatedCanvasBindingException(
                 "The pattern does not contain any active positions. Use 'x' to mark active positions.");
-        }
-
-        if (navbarPositions.forward() == null && navbarPositions.backward() == null) {
-            throw new PaginatedCanvasBindingException(
-                "The pattern does not contain any navigating symbols. Use '>' or '<' to mark the navigating symbols.");
         }
 
         return new PredefinedBindings(activePositions, navbarPositions);
@@ -270,7 +265,7 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
         return partitionedElements;
     }
 
-    PrecalculatedSlotIndex[] precalculatedSlotIndexes() {
+    Position[] precalculatedSlotIndexes() {
         return precalculatedSlotIndexes;
     }
 
@@ -286,14 +281,12 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
         return backwardItemBinding;
     }
 
-    private PrecalculatedSlotIndex[] calculatePrecalculatedIndexes(final int totalSlots) {
-        final PrecalculatedSlotIndex[] slotIndexes = new PrecalculatedSlotIndex[totalSlots];
+    private Position[] calculatePrecalculatedIndexes(final int totalSlots) {
+        final Position[] slotIndexes = new Position[totalSlots];
 
         int index = 0;
         for (final CanvasPosition position : positionsToProcess()) {
-            index = position.maximum().equals(position.minimum())
-                ? fillIndexesForDirectPosition(position, slotIndexes, index)
-                : fillIndexesForPosition(position, slotIndexes, index);
+            index = fillIndexesForPosition(position, slotIndexes, index);
         }
 
         return slotIndexes;
@@ -305,49 +298,21 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
 
     private int fillIndexesForPosition(
         final CanvasPosition position,
-        final PrecalculatedSlotIndex[] slotIndexes,
+        final Position[] slotIndexes,
         final int startIndex) {
-        final int totalColumns = position.maximum().column() - position.minimum().column() + 1;
         final Position minimum = position.minimum();
         final Position maximum = position.maximum();
 
         int index = startIndex;
-
-        int currentRow = 0;
-        int currentColumn = 0;
-        while (currentRow <= (maximum.row() - minimum.row())) {
-            while (currentColumn <= (maximum.column() - minimum.column())) {
-                final int slotIndex = currentRow * totalColumns + currentColumn;
-                slotIndexes[index++] = new PrecalculatedSlotIndex(currentRow, currentColumn, slotIndex);
-                currentColumn++;
-            }
-
-            currentColumn = 0;
-            currentRow++;
+        if (minimum.equals(maximum)) {
+            slotIndexes[index++] = new Position(maximum.row(), maximum.column());
+            return index;
         }
 
-        return index;
-    }
-
-    private int fillIndexesForDirectPosition(
-        final CanvasPosition position,
-        final PrecalculatedSlotIndex[] slotIndexes,
-        final int startIndex) {
-        final int totalColumns = position.maximum().column() - position.minimum().column() + 1;
-        final Position minimum = position.minimum();
-        final Position maximum = position.maximum();
-
-        int index = startIndex;
-        int currentRow = minimum.row();
-        int currentColumn = minimum.column();
-        while (currentRow <= maximum.row()) {
-            while (currentColumn <= maximum.column()) {
-                final int slotIndex = (currentRow - minimum.row()) * totalColumns + (currentColumn - minimum.column());
-                slotIndexes[index++] = new PrecalculatedSlotIndex(currentRow, currentColumn, slotIndex);
-                currentColumn++;
+        for (int row = minimum.row(); row <= maximum.row(); row++) {
+            for (int column = minimum.column(); column <= maximum.column(); column++) {
+                slotIndexes[index++] = new Position(row, column);
             }
-            currentColumn = minimum.column();
-            currentRow++;
         }
 
         return index;
@@ -365,8 +330,6 @@ final class PaginatedCanvasImpl extends BaseCanvas implements PaginatedCanvas {
 
         return (maximum.row() - minimum.row() + 1) * (maximum.column() - minimum.column() + 1);
     }
-
-    record PrecalculatedSlotIndex(int row, int column, int slotIndex) {}
 
     record NavigationalSlotIndexes(Position forward, Position backward) {}
 
