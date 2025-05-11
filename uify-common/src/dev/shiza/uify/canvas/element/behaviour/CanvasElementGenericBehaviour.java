@@ -17,6 +17,10 @@ public interface CanvasElementGenericBehaviour<T extends Canvas, E extends Inven
             throw new NullPointerException("The 'after' CanvasElementBehaviour cannot be null");
         }
 
+        if (this.equals(undefined())) {
+            return after;
+        }
+
         return (state, event) -> {
             this.accept(state, event);
             after.accept(state, event);

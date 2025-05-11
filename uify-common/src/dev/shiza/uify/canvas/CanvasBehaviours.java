@@ -8,5 +8,7 @@ public interface CanvasBehaviours {
 
     Canvas onCanvasClose(final CanvasGenericBehaviour<Canvas, InventoryCloseEvent> canvasCloseBehaviour);
 
-    <T extends Canvas> Canvas onCanvasTick(final Class<T> canvasType, final CanvasTickBehaviour<T> canvasTickBehaviour);
+    <T extends Canvas> Canvas onCanvasTick(
+        final Class<T> canvasTickType,
+        final CanvasTickBehaviour<T> canvasTickBehaviour);
 }

@@ -4,9 +4,9 @@ import java.time.Duration;
 
 public class MinecraftTimeEquivalent {
 
-    private static final long TICKS_PER_SECOND = 20;
-    private static final long MILLISECONDS_PER_SECOND = 1000;
-    private static final long MILLISECONDS_PER_TICK = MILLISECONDS_PER_SECOND / TICKS_PER_SECOND;
+    public static final long TICKS_PER_SECOND = 20;
+    public static final long MILLISECONDS_PER_SECOND = 1000;
+    public static final long MILLISECONDS_PER_TICK = MILLISECONDS_PER_SECOND / TICKS_PER_SECOND;
 
     public static final long TICK = 1;
     public static final long SECOND = TICK * 20;

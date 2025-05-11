@@ -20,31 +20,35 @@ public class ExpiringMap<K, V> {
     private final Set<ExpirationListener<K, V>> expirationListeners;
 
     public ExpiringMap(
-        final Duration defaultTtl, final boolean threadSafe, final int cleanupIntervalMillis, final ExpirationScheduler scheduler) {
+        final Duration defaultTtl,
+        final boolean threadSafe,
+        final Duration cleanupInterval,
+        final ExpirationScheduler scheduler) {
         this.defaultTtl = defaultTtl;
         this.underlyingMap = threadSafe ? new ConcurrentHashMap<>() : new HashMap<>();
         this.expirationListeners = threadSafe ?
             Collections.newSetFromMap(new ConcurrentHashMap<>()) : new HashSet<>();
-        if (cleanupIntervalMillis > 0) {
+        if (cleanupInterval.compareTo(Duration.ZERO) > 0) {
             this.scheduler = scheduler != null ? scheduler : new DefaultExpirationScheduler();
-            this.scheduledTask = this.scheduler.scheduleAtFixedRate(this::removeExpiredEntries, cleanupIntervalMillis, cleanupIntervalMillis);
+            this.scheduledTask =
+                this.scheduler.scheduleAtFixedRate(this::removeExpiredEntries, cleanupInterval, cleanupInterval);
         } else {
             this.scheduler = null;
             this.scheduledTask = null;
         }
     }
 
-    public ExpiringMap(final Duration defaultTtl, final int cleanupIntervalSeconds) {
-        this(defaultTtl, true, cleanupIntervalSeconds, null);
+    public ExpiringMap(final Duration defaultTtl, final Duration cleanupInterval) {
+        this(defaultTtl, true, cleanupInterval, null);
     }
 
     public ExpiringMap(
-        final Duration defaultTtl, final int cleanupIntervalMillis, final ExpirationScheduler scheduler) {
-        this(defaultTtl, true, cleanupIntervalMillis, scheduler);
+        final Duration defaultTtl, final Duration cleanupInterval, final ExpirationScheduler scheduler) {
+        this(defaultTtl, true, cleanupInterval, scheduler);
     }
 
     public ExpiringMap(final Duration defaultTtl) {
-        this(defaultTtl, true, 0, null);
+        this(defaultTtl, true, Duration.ZERO, null);
     }
 
     public void expirationListener(final ExpirationListener<K, V> listener) {

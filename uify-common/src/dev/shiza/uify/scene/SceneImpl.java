@@ -5,16 +5,23 @@ import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.behaviour.tick.CanvasTickBehaviour;
 import dev.shiza.uify.canvas.behaviour.tick.CanvasTickBehaviourState;
+import dev.shiza.uify.canvas.element.cooldown.expiration.ExpirationScheduler;
+import dev.shiza.uify.canvas.element.cooldown.expiration.ExpiringMap;
+import dev.shiza.uify.canvas.element.cooldown.expiration.PaperExpirationSchedulerAccessor;
 import dev.shiza.uify.scene.behaviour.SceneGenericBehaviour;
+import dev.shiza.uify.scene.behaviour.tick.SceneTickBehaviour;
 import dev.shiza.uify.scene.inventory.SceneInventoryHolder;
 import dev.shiza.uify.scene.renderer.SceneRenderer;
-import dev.shiza.uify.scene.behaviour.tick.SceneTickBehaviour;
 import dev.shiza.uify.scene.tick.SceneTickRegistry;
 import dev.shiza.uify.scene.view.AnvilView;
 import dev.shiza.uify.scene.view.SceneView;
+import dev.shiza.uify.time.MinecraftTimeEquivalent;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.LongAdder;
 import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -146,6 +153,12 @@ public record SceneImpl(SceneView view,
     }
 
     private SceneTickBehaviour delegatingSceneTickBehaviour() {
+        final ExpirationScheduler expirationScheduler = PaperExpirationSchedulerAccessor.paperExpirationScheduler();
+        final ExpiringMap<Integer, Instant> expiringMap =
+            new ExpiringMap<>(
+                Duration.ZERO,
+                Duration.ofMillis(MinecraftTimeEquivalent.MILLISECONDS_PER_TICK),
+                expirationScheduler);
         return holder -> {
             final Map<Canvas, CanvasTickBehaviour<? extends Canvas>> canvasTickBehaviours =
                 ((SceneImpl) holder.sceneMorph()).canvases().stream()
@@ -159,14 +172,30 @@ public record SceneImpl(SceneView view,
                 return;
             }
 
+            final LongAdder index = new LongAdder();
             canvasTickBehaviours.forEach((canvas, canvasTickBehaviour) -> {
+                index.increment();
+
                 final Class<? extends Canvas> canvasType = ((BaseCanvas) canvas).canvasType();
                 if (canvasType != null) {
+                    final int currentIndex = index.intValue();
+
+                    final Instant now = Instant.now();
+                    final Instant expirationTime = expiringMap.get(currentIndex);
+                    if (expirationTime != null && expirationTime.isAfter(now)) {
+                        return;
+                    }
+
                     // noinspection unchecked
-                    final CanvasTickBehaviour<Canvas> safeTickBehaviour = (CanvasTickBehaviour<Canvas>) canvasTickBehaviour;
+                    final CanvasTickBehaviour<Canvas> safeTickBehaviour =
+                        (CanvasTickBehaviour<Canvas>) canvasTickBehaviour;
                     final CanvasTickBehaviourState<Canvas> tickBehaviourState =
                         new CanvasTickBehaviourState<>(holder, canvas.typed(canvasType));
-                    safeTickBehaviour.accept(tickBehaviourState);
+
+                    final Duration delay = safeTickBehaviour.accept(tickBehaviourState);
+                    if (delay.compareTo(Duration.ZERO) > 0) {
+                        expiringMap.put(currentIndex, now.plus(delay), delay);
+                    }
                 }
             });
         };

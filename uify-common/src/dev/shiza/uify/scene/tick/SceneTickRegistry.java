@@ -17,7 +17,6 @@ public interface SceneTickRegistry {
     Set<SceneInventoryHolder> tickingSceneInventoryHolders();
 
     final class InstanceHolder {
-
         static final SceneTickRegistry INSTANCE = new SceneTickRegistryImpl(new HashSet<>());
 
         private InstanceHolder() {}

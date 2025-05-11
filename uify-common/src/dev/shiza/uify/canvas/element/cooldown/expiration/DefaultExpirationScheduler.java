@@ -1,5 +1,6 @@
 package dev.shiza.uify.canvas.element.cooldown.expiration;
 
+import java.time.Duration;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
@@ -14,9 +15,9 @@ final class DefaultExpirationScheduler implements ExpirationScheduler {
     }
 
     @Override
-    public Runnable scheduleAtFixedRate(final Runnable task, final int initialDelay, final int period) {
+    public Runnable scheduleAtFixedRate(final Runnable task, final Duration initialDelay, final Duration period) {
         final ScheduledFuture<?> future = executor.scheduleAtFixedRate(
-            task, initialDelay, period, TimeUnit.SECONDS);
+            task, initialDelay.toMillis(), period.toMillis(), TimeUnit.MILLISECONDS);
         return () -> future.cancel(false);
     }
 

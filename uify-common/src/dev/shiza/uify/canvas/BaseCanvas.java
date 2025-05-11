@@ -84,14 +84,14 @@ public abstract class BaseCanvas implements Canvas {
 
     @Override
     public <T extends Canvas> Canvas onCanvasTick(
-        final Class<T> canvasType, final CanvasTickBehaviour<T> canvasTickBehaviour) {
-        if (this.canvasTickType != null && !this.canvasTickType.equals(canvasType)) {
+        final Class<T> canvasTickType, final CanvasTickBehaviour<T> canvasTickBehaviour) {
+        if (this.canvasTickType != null && !this.canvasTickType.equals(canvasTickType)) {
             throw new CanvasTypingException("You cannot mix generic type for canvases.");
         }
 
-        this.canvasTickType = canvasType;
         // noinspection unchecked
         this.canvasTickBehaviour = ((CanvasTickBehaviour<T>) this.canvasTickBehaviour).andThen(canvasTickBehaviour);
+        this.canvasTickType = canvasTickType;
         return this;
     }
 

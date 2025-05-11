@@ -17,12 +17,12 @@ final class PaperExpirationScheduler implements ExpirationScheduler {
     }
 
     @Override
-    public Runnable scheduleAtFixedRate(final Runnable task, final int initialDelay, final int period) {
+    public Runnable scheduleAtFixedRate(final Runnable task, final Duration initialDelay, final Duration period) {
         final BukkitTask future = scheduler.runTaskTimer(
             plugin,
             task,
-            MinecraftTimeEquivalent.ticks(Duration.ofMillis(initialDelay)),
-            MinecraftTimeEquivalent.ticks(Duration.ofMillis(period)));
+            MinecraftTimeEquivalent.ticks(initialDelay),
+            MinecraftTimeEquivalent.ticks(period));
         return future::cancel;
     }
 

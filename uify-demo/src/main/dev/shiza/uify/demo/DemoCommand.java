@@ -214,15 +214,19 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
                         .compose(position -> position.minimum(1, 8).maximum(2, 8))
                         .compose(position -> position.minimum(3, 0).maximum(3, 8))
                         .populate(shuffledElements(0))
-                        .onPaginatedCanvasTick(state -> state.canvas()
-                            .populate(shuffledElements(currentTick.intValue()), true)
-                            .update()))
+                        .onPaginatedCanvasTick(state -> {
+                            state.canvas()
+                                .populate(shuffledElements(currentTick.intValue()), true)
+                                .update();
+                            return Duration.ofMillis(300);
+                        }))
                 .canvas(SequentialCanvas.rows(2)
                     .position(canvasPosition -> canvasPosition.minimum(1, 1).maximum(2, 7))
                     .elements(randomElements())
                     .onSequentialCanvasTick(state -> {
                         state.canvas().elements(randomElements(), true);
                         state.canvas().update();
+                        return Duration.ofSeconds(5);
                     }))
                 .onSceneTick(holder -> {
                     currentTick.increment();
@@ -244,7 +248,10 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
                     new ImmutableCanvasElement(() -> ItemStacks.leatherArmor(Material.LEATHER_CHESTPLATE)),
                     new ImmutableCanvasElement(() -> ItemStacks.leatherArmor(Material.LEATHER_LEGGINGS)),
                     new ImmutableCanvasElement(() -> ItemStacks.leatherArmor(Material.LEATHER_BOOTS)))
-                .onSequentialCanvasTick(state -> state.canvas().update()))
+                .onSequentialCanvasTick(state -> {
+                    state.canvas().update();
+                    return Duration.ofSeconds(10);
+                }))
             .dispatch();
     }
 

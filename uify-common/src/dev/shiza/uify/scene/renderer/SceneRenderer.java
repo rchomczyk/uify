@@ -15,7 +15,7 @@ public interface SceneRenderer {
 
     SceneInventoryHolder renderScene(final Scene sceneMorph, final SceneInventoryHolder sceneInventoryHolder);
 
-    class InstanceHolder {
+    final class InstanceHolder {
         private static final SceneRenderer INSTANCE = new SceneRendererImpl();
 
         private InstanceHolder() {
