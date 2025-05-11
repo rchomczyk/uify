@@ -24,8 +24,8 @@ final class CooldownService implements CooldownFacade {
     @Override
     public boolean isOnCooldown(final CanvasElement element, final HumanEntity viewer) {
         final Instant now = Instant.now();
-        return cooldowns.containsKey(new CooldownCompositeKey(element, viewer.getUniqueId())) &&
-            cooldowns.get(new CooldownCompositeKey(element, viewer.getUniqueId())).isAfter(now);
+        final Instant expirationTime = cooldowns.get(new CooldownCompositeKey(element, viewer.getUniqueId()));
+        return expirationTime != null && expirationTime.isAfter(now);
     }
 
     @Override

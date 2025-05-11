@@ -21,8 +21,8 @@ final class PaperExpirationScheduler implements ExpirationScheduler {
         final BukkitTask future = scheduler.runTaskTimer(
             plugin,
             task,
-            MinecraftTimeEquivalent.ticks(Duration.ofSeconds(initialDelay)),
-            MinecraftTimeEquivalent.ticks(Duration.ofSeconds(period)));
+            MinecraftTimeEquivalent.ticks(Duration.ofMillis(initialDelay)),
+            MinecraftTimeEquivalent.ticks(Duration.ofMillis(period)));
         return future::cancel;
     }
 

@@ -13,7 +13,7 @@ public final class CooldownFacadeFactory {
     public static CooldownFacade cooldownFacade() {
         final ExpirationScheduler expirationScheduler = PaperExpirationSchedulerAccessor.paperExpirationScheduler();
         final ExpiringMap<CooldownCompositeKey, Instant> expiringMap =
-            new ExpiringMap<>(Duration.ZERO, 1, expirationScheduler);
+            new ExpiringMap<>(Duration.ZERO, 50, expirationScheduler);
         expiringMap.expirationListener(new CooldownExpirationListener());
         return new CooldownService(expiringMap);
     }

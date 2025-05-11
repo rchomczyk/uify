@@ -20,17 +20,14 @@ public class ExpiringMap<K, V> {
     private final Set<ExpirationListener<K, V>> expirationListeners;
 
     public ExpiringMap(
-        final Duration defaultTtl, final boolean threadSafe, final int cleanupIntervalSeconds, final ExpirationScheduler scheduler) {
+        final Duration defaultTtl, final boolean threadSafe, final int cleanupIntervalMillis, final ExpirationScheduler scheduler) {
         this.defaultTtl = defaultTtl;
         this.underlyingMap = threadSafe ? new ConcurrentHashMap<>() : new HashMap<>();
         this.expirationListeners = threadSafe ?
             Collections.newSetFromMap(new ConcurrentHashMap<>()) : new HashSet<>();
-        if (cleanupIntervalSeconds > 0) {
+        if (cleanupIntervalMillis > 0) {
             this.scheduler = scheduler != null ? scheduler : new DefaultExpirationScheduler();
-            this.scheduledTask = this.scheduler.scheduleAtFixedRate(
-                this::removeExpiredEntries,
-                cleanupIntervalSeconds,
-                cleanupIntervalSeconds);
+            this.scheduledTask = this.scheduler.scheduleAtFixedRate(this::removeExpiredEntries, cleanupIntervalMillis, cleanupIntervalMillis);
         } else {
             this.scheduler = null;
             this.scheduledTask = null;
@@ -42,8 +39,8 @@ public class ExpiringMap<K, V> {
     }
 
     public ExpiringMap(
-        final Duration defaultTtl, final int cleanupIntervalSeconds, final ExpirationScheduler scheduler) {
-        this(defaultTtl, true, cleanupIntervalSeconds, scheduler);
+        final Duration defaultTtl, final int cleanupIntervalMillis, final ExpirationScheduler scheduler) {
+        this(defaultTtl, true, cleanupIntervalMillis, scheduler);
     }
 
     public ExpiringMap(final Duration defaultTtl) {

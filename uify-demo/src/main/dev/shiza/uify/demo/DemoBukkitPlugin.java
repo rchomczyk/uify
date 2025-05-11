@@ -11,7 +11,7 @@ public class DemoBukkitPlugin extends JavaPlugin {
     public void onEnable() {
         // Configuration of uify is required for it to properly catch up all actions
         // happening within a scene.
-        Uify.configure(this, Duration.ofSeconds(2));
+        Uify.configure(this, Duration.ofMillis(50));
 
         Objects.requireNonNull(getCommand("uify")).setExecutor(new DemoCommand());
     }

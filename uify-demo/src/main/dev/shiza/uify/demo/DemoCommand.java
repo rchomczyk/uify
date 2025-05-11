@@ -115,7 +115,7 @@ final class DemoCommand implements CommandExecutor, TabCompleter {
                                 Placeholder.unparsed("time", state.remainingPeriod().toString()))))
                     .onElementCooldownExpiration((state, event) ->
                         event.getWhoClicked().sendMessage(Component.text("You can click me again!")))
-                    .cooldown(Duration.ofSeconds(30))))
+                    .cooldown(Duration.ofSeconds(5))))
             .dispatch();
     }
 
