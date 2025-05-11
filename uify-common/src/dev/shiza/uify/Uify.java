@@ -18,14 +18,16 @@ public final class Uify {
     private Uify() {}
 
     public static void configure(final Plugin plugin) {
-        configure(plugin, Duration.ZERO);
+        plugin.getServer().getPluginManager().registerEvents(new SceneInteractionListener(), plugin);
+        plugin.getServer().getPluginManager().registerEvents(new CanvasElementInteractionListener(), plugin);
     }
 
     @ApiStatus.Experimental
     public static void configure(final Plugin plugin, final Duration tickInterval) {
-        plugin.getServer().getPluginManager().registerEvents(new SceneInteractionListener(), plugin);
-        plugin.getServer().getPluginManager().registerEvents(new CanvasElementInteractionListener(), plugin);
-        if (tickInterval.compareTo(Duration.ZERO) > 0) {
+        configure(plugin);
+
+        final boolean hasTickingConfigured = tickInterval.compareTo(Duration.ZERO) > 0;
+        if (hasTickingConfigured) {
             plugin.getComponentLogger().info(tickingNotice());
 
             final long intervalInTicks = MinecraftTimeEquivalent.ticks(tickInterval);
