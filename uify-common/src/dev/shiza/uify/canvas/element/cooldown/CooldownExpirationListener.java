@@ -1,6 +1,6 @@
 package dev.shiza.uify.canvas.element.cooldown;
 
-import dev.shiza.uify.event.InventoryEvents;
+import dev.shiza.uify.inventory.InventoryEvents;
 import dev.shiza.uify.canvas.BaseCanvas;
 import dev.shiza.uify.canvas.Canvas;
 import dev.shiza.uify.canvas.element.CanvasBaseElement;

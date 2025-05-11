@@ -1,4 +1,4 @@
-package dev.shiza.uify.event;
+package dev.shiza.uify.inventory;
 
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.event.inventory.ClickType;
