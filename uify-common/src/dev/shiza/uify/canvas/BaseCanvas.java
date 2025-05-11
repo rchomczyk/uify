@@ -48,17 +48,16 @@ public abstract class BaseCanvas implements Canvas {
     }
 
     private void update(final SceneInventoryHolder owner) {
-        final Map<Integer, IdentifiedCanvasElement> mutableSceneElementsBySlot =
-            new HashMap<>(owner.renderedElements());
-        renderedElements().forEach((slot, element) -> mutableSceneElementsBySlot.remove(slot));
+        final Map<Integer, IdentifiedCanvasElement> currentOwnerElements = owner.renderedElements();
+        final Map<Integer, IdentifiedCanvasElement> updatedOwnerElements = new HashMap<>(currentOwnerElements);
 
-        final Map<Integer, IdentifiedCanvasElement> renderedCanvasElements =
+        final Map<Integer, IdentifiedCanvasElement> newCanvasElements =
             mapper().renderCanvas(owner, owner.sceneMorph(), this);
-        mutableSceneElementsBySlot.putAll(renderedCanvasElements);
+        renderedElements(newCanvasElements);
 
-        renderedElements(renderedCanvasElements);
-
-        owner.renderedElements(mutableSceneElementsBySlot);
+        updatedOwnerElements.entrySet().removeIf(entry -> entry.getValue().canvas().equals(this));
+        updatedOwnerElements.putAll(newCanvasElements);
+        owner.renderedElements(updatedOwnerElements);
     }
 
     @Override
