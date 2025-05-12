@@ -2,16 +2,22 @@ package dev.shiza.uify.canvas.element.cooldown.expiration;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+import org.jetbrains.annotations.NotNull;
 
-public class ExpiringMap<K, V> {
+public final class ExpiringMap<K, V> implements Map<K, V> {
 
     private final Map<K, ExpiringEntry<V>> underlyingMap;
     private final Duration defaultTtl;
@@ -26,8 +32,7 @@ public class ExpiringMap<K, V> {
         final ExpirationScheduler scheduler) {
         this.defaultTtl = defaultTtl;
         this.underlyingMap = threadSafe ? new ConcurrentHashMap<>() : new HashMap<>();
-        this.expirationListeners = threadSafe ?
-            Collections.newSetFromMap(new ConcurrentHashMap<>()) : new HashSet<>();
+        this.expirationListeners = threadSafe ? Collections.newSetFromMap(new ConcurrentHashMap<>()) : new HashSet<>();
         if (cleanupInterval.compareTo(Duration.ZERO) > 0) {
             this.scheduler = scheduler != null ? scheduler : new DefaultExpirationScheduler();
             this.scheduledTask =
@@ -38,33 +43,11 @@ public class ExpiringMap<K, V> {
         }
     }
 
-    public ExpiringMap(final Duration defaultTtl, final Duration cleanupInterval) {
-        this(defaultTtl, true, cleanupInterval, null);
-    }
-
-    public ExpiringMap(
-        final Duration defaultTtl, final Duration cleanupInterval, final ExpirationScheduler scheduler) {
+    public ExpiringMap(final Duration defaultTtl, final Duration cleanupInterval, final ExpirationScheduler scheduler) {
         this(defaultTtl, true, cleanupInterval, scheduler);
     }
 
-    public ExpiringMap(final Duration defaultTtl) {
-        this(defaultTtl, true, Duration.ZERO, null);
-    }
-
-    public void expirationListener(final ExpirationListener<K, V> listener) {
-        expirationListeners.add(listener);
-    }
-
-    private void notifyListeners(final K key, final V value) {
-        for (final ExpirationListener<K, V> listener : expirationListeners) {
-            try {
-                listener.onExpire(key, value);
-            } catch (Exception e) {
-                throw new ExpirationListenerNotifyingException("Could not notify listeners about entry expiration.");
-            }
-        }
-    }
-
+    @Override
     public V put(final K key, final V value) {
         return put(key, value, defaultTtl);
     }
@@ -75,33 +58,105 @@ public class ExpiringMap<K, V> {
         return oldEntry != null ? oldEntry.value() : null;
     }
 
-    public V get(final K key) {
-        final ExpiringEntry<V> entry = underlyingMap.get(key);
+    @Override
+    public void putAll(@NotNull final Map<? extends K, ? extends V> m) {
+        m.forEach(this::put);
+    }
+
+    public void putAll(@NotNull final Map<? extends K, ? extends V> m, final Duration ttl) {
+        m.forEach((key, value) -> put(key, value, ttl));
+    }
+
+    @Override
+    public V get(final Object key) {
+        // noinspection unchecked
+        final K typedKey = (K) key;
+
+        final ExpiringEntry<V> entry = underlyingMap.get(typedKey);
         if (entry == null) {
             return null;
         }
 
         if (entry.isExpired()) {
             final V expiredValue = entry.value();
-            underlyingMap.remove(key);
-            notifyListeners(key, expiredValue);
+            underlyingMap.remove(typedKey);
+            notifyListeners(typedKey, expiredValue);
             return null;
         }
 
         return entry.value();
     }
 
-    public V remove(final K key) {
+    @Override
+    public V remove(final Object key) {
         final ExpiringEntry<V> entry = underlyingMap.remove(key);
         return entry != null ? entry.value() : null;
     }
 
-    public boolean containsKey(final K key) {
+    @Override
+    public boolean containsKey(final Object key) {
         return underlyingMap.containsKey(key);
     }
 
+    @Override
+    public boolean containsValue(Object value) {
+        return underlyingMap.values().stream()
+            .anyMatch(entry -> Objects.equals(entry.value(), value));
+    }
+
+    @Override
     public int size() {
         return underlyingMap.size();
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return underlyingMap.isEmpty();
+    }
+
+    @Override
+    public V compute(final K key, final BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
+        final V oldValue = get(key);
+        final V newValue = remappingFunction.apply(key, oldValue);
+        if (newValue == null) {
+            if (oldValue != null) {
+                remove(key);
+            }
+
+            return null;
+        } else {
+            put(key, newValue);
+            return newValue;
+        }
+    }
+
+    @Override
+    public void clear() {
+        underlyingMap.clear();
+    }
+
+    @Override
+    public @NotNull Set<K> keySet() {
+        return underlyingMap.keySet();
+    }
+
+    @Override
+    public @NotNull Collection<V> values() {
+        return underlyingMap.values().stream()
+            .filter(Predicate.not(ExpiringEntry::isExpired))
+            .map(ExpiringEntry::value)
+            .collect(Collectors.toSet());
+    }
+
+    @Override
+    public @NotNull Set<Entry<K, V>> entrySet() {
+        return underlyingMap.entrySet().stream()
+            .map(entry -> new AbstractMap.SimpleEntry<>(entry.getKey(), entry.getValue().value()))
+            .collect(Collectors.toSet());
+    }
+
+    public void expirationListener(final ExpirationListener<K, V> listener) {
+        expirationListeners.add(listener);
     }
 
     public void removeExpiredEntries() {
@@ -121,23 +176,14 @@ public class ExpiringMap<K, V> {
         }
     }
 
-    public V compute(final K key, final BiFunction<? super K, ? super V, ? extends V> remappingFunction) {
-        final V oldValue = get(key);
-        final V newValue = remappingFunction.apply(key, oldValue);
-        if (newValue == null) {
-            if (oldValue != null) {
-                remove(key);
+    private void notifyListeners(final K key, final V value) {
+        for (final ExpirationListener<K, V> listener : expirationListeners) {
+            try {
+                listener.onExpire(key, value);
+            } catch (Exception e) {
+                throw new ExpirationListenerNotifyingException("Could not notify listeners about entry expiration.");
             }
-
-            return null;
-        } else {
-            put(key, newValue);
-            return newValue;
         }
-    }
-
-    public void clear() {
-        underlyingMap.clear();
     }
 
     public void shutdown() {
